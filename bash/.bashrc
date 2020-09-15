@@ -1,0 +1,1 @@
+/home/gschare/.bashrc

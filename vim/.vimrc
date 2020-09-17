@@ -41,6 +41,12 @@ set ignorecase
 "Turn on syntax highlighting
 syntax on
 
+"Search highlighting WHILE search but not after
+set incsearch
+
+"Search highlighting AFTER search
+set hlsearch
+
 "Allow mouse scrolling and such
 set mouse=a
 

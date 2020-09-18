@@ -15,6 +15,7 @@ set shiftwidth=4
 " Always replace tab with 8 spaces, except for makefiles
 set expandtab
 autocmd FileType make setlocal noexpandtab
+autocmd FileType python setlocal tabstop=4 autoindent
 
 " My settings when editing *.txt files
 "   - automatically indent lines according to previous lines

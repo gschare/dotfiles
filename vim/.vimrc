@@ -1,21 +1,26 @@
 "No compatibility mode
 set nocompatible
 
+"Fix problem where vim starts in REPLACE mode
+"See https://www.reddit.com/r/bashonubuntuonwindows/comments/ijys54/has_anyone_else_started_seeing_vim_open_in/
+set t_u7=
+
 "Show command keystrokes
 set showcmd
 
 "Line numbers
 set number
 
-" When coding, auto-indent by 4 spaces, just like in K&R
-" Note that this does NOT change tab into 4 spaces
-" You can do that with "set tabstop=4", which is a BAD idea
+"Tab settings
 set shiftwidth=4
-
-" Always replace tab with 8 spaces, except for makefiles
+set softtabstop=0
+set tabstop=4
+set autoindent
+set smartindent
 set expandtab
+
 autocmd FileType make setlocal noexpandtab
-autocmd FileType python setlocal tabstop=4 autoindent
+autocmd FileType python setlocal tabstop=4 autoindent smartindent
 
 " My settings when editing *.txt files
 "   - automatically indent lines according to previous lines

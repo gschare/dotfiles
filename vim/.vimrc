@@ -62,6 +62,16 @@ colorscheme slate
 "Custom keybindings
 noremap <C-Up> 5k
 noremap <C-Down> 5j
+"Tab always indents, Shift-Tab always deindents
+inoremap <S-Tab> <C-D>
+nnoremap <Tab> >>_
+nnoremap <S-Tab> <<_
+vnoremap <Tab> >
+vnoremap <S-Tab> <
+"Shift-Space in insert mode enters normal mode
+"inoremap <S-Space> <Esc>
+"Shift-Space in normal mode enters insert mode
+"nnoremap <S-Space> i
 
 "Open split panes to right and bottom
 set splitright

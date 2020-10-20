@@ -46,6 +46,7 @@ set ignorecase
 
 "Turn on syntax highlighting
 syntax on
+filetype plugin indent on
 
 "Search highlighting WHILE search but not after
 set incsearch
@@ -57,7 +58,14 @@ set hlsearch
 set mouse=a
 
 "Color scheme
-colorscheme slate
+set termguicolors
+autocmd vimenter * colorscheme gruvbox
+autocmd vimenter * let g:airline_theme='gruvbox'
+autocmd vimenter * set bg=dark
+autocmd vimenter * highlight Normal ctermbg=NONE guibg=NONE
+
+"Turn off mode indicator (airline is better)
+set noshowmode
 
 "Custom keybindings
 noremap <C-Up> 5k
@@ -68,6 +76,8 @@ nnoremap <Tab> >>_
 nnoremap <S-Tab> <<_
 vnoremap <Tab> >
 vnoremap <S-Tab> <
+"Reload screen also clears previous search
+nnoremap <C-l> :nohlsearch<CR><C-l>
 "Shift-Space in insert mode enters normal mode
 "inoremap <S-Space> <Esc>
 "Shift-Space in normal mode enters insert mode

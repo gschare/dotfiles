@@ -111,6 +111,9 @@ autocmd vimenter * highlight Normal ctermbg=NONE guibg=NONE
 set noshowmode
 
 "Custom keybindings
+"Escape with double `
+inoremap `` <ESC>
+vnoremap `` <ESC>
 noremap <C-Up> 5k
 noremap <C-Down> 5j
 "Tab always indents, Shift-Tab always deindents
@@ -125,6 +128,9 @@ nnoremap <C-l> :nohlsearch<CR><C-l>
 "inoremap <S-Space> <Esc>
 "Shift-Space in normal mode enters insert mode
 "nnoremap <S-Space> i
+"Automatic closings
+inoremap {<CR> {<CR>}<ESC>O
+inoremap {;<CR> {<CR>};<ESC>O
 
 "Open split panes to right and bottom
 set splitright

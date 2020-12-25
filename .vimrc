@@ -28,7 +28,7 @@ autocmd FileType python setlocal tabstop=4 autoindent smartindent
 "   - when I hit tab key, move 2 spaces instead of 8
 "   - wrap text if I go longer than 76 columns
 "   - check spelling
-autocmd FileType text setlocal autoindent expandtab softtabstop=2 textwidth=76 spell spelllang=en_us
+"autocmd FileType text setlocal autoindent expandtab softtabstop=2 textwidth=76 spell spelllang=en_us
 
 "HTML closetag settings
 
@@ -112,8 +112,8 @@ set noshowmode
 
 "Custom keybindings
 "Escape with double `
-inoremap `` <ESC>
-vnoremap `` <ESC>
+"inoremap `` <ESC>
+"vnoremap `` <ESC>
 noremap <C-Up> 5k
 noremap <C-Down> 5j
 "Tab always indents, Shift-Tab always deindents

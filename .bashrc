@@ -119,5 +119,5 @@ fi
 # load ruby
 eval "$(~/.rbenv/bin/rbenv init -)"
 
-source .aliases
-source .functions
+source ~/.aliases
+source ~/.functions

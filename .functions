@@ -2,7 +2,7 @@ parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1) /'
 }
 # include \u and \h for user and hostname
-export PS1="\[\e[1;32m\]\[\e[34m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ "
+export PS1="\[\e[1;32m\]\[\e[1;34m\]\w \[\e[91m\]\$(parse_git_branch)\[\e[00m\]$ "
 
 # use vim as default editor
 export EDITOR=vim

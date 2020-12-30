@@ -21,6 +21,8 @@ set expandtab
 
 autocmd FileType make setlocal noexpandtab
 autocmd FileType python setlocal tabstop=4 autoindent smartindent
+autocmd FileType scheme setlocal tabstop=2 shiftwidth=2 autoindent smartindent
+autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
 
 " My settings when editing *.txt files
 "   - automatically indent lines according to previous lines
@@ -101,19 +103,23 @@ set hlsearch
 set mouse=a
 
 "Color scheme
-set termguicolors
 autocmd vimenter * colorscheme gruvbox
+set t_8f=[38;2;%lu;%lu;%lum
+set t_8b=[48;2;%lu;%lu;%lum
+set termguicolors
 autocmd vimenter * let g:airline_theme='gruvbox'
+autocmd vimenter * let g:gruvbox_termcolors=16
 autocmd vimenter * set bg=dark
-autocmd vimenter * highlight Normal ctermbg=NONE guibg=NONE
+autocmd vimenter * hi! Normal ctermbg=NONE guibg=NONE
+autocmd vimenter * hi! NonText ctermbg=NONE guibg=NONE
+autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
 
 "Turn off mode indicator (airline is better)
 set noshowmode
 
 "Custom keybindings
-"Escape with double `
-"inoremap `` <ESC>
-"vnoremap `` <ESC>
+"Escape with double jj
+inoremap jj <ESC>
 noremap <C-Up> 5k
 noremap <C-Down> 5j
 "Tab always indents, Shift-Tab always deindents
@@ -131,7 +137,10 @@ nnoremap <C-l> :nohlsearch<CR><C-l>
 "Automatic closings
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
+set pastetoggle=<F3> 
 
 "Open split panes to right and bottom
 set splitright
 set splitbelow
+
+

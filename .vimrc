@@ -24,6 +24,9 @@ autocmd FileType python setlocal tabstop=4 autoindent smartindent
 autocmd FileType scheme setlocal tabstop=2 shiftwidth=2 autoindent smartindent
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
 
+autocmd BufWinLeave *.* mkview
+autocmd BufWinEnter *.* silent loadview
+
 " My settings when editing *.txt files
 "   - automatically indent lines according to previous lines
 "   - replace tab with 8 spaces
@@ -137,7 +140,7 @@ nnoremap <C-l> :nohlsearch<CR><C-l>
 "Automatic closings
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
-set pastetoggle=<F3> 
+set pastetoggle=<F3>
 
 "Open split panes to right and bottom
 set splitright

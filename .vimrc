@@ -19,21 +19,20 @@ set autoindent
 set smartindent
 set expandtab
 
+"File-type specific
 autocmd FileType make setlocal noexpandtab
-autocmd FileType python setlocal tabstop=4 autoindent smartindent
-autocmd FileType scheme setlocal tabstop=2 shiftwidth=2 autoindent smartindent
+autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
+autocmd FileType text setlocal textwidth=80 spell spelllang=en_us
+au BufRead,BufNewFile *.lhs set filetype=lhaskell
 
+"Save view settings (e.g. cursor position, folds,...)
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview
 
-" My settings when editing *.txt files
-"   - automatically indent lines according to previous lines
-"   - replace tab with 8 spaces
-"   - when I hit tab key, move 2 spaces instead of 8
-"   - wrap text if I go longer than 76 columns
-"   - check spelling
-"autocmd FileType text setlocal autoindent expandtab softtabstop=2 textwidth=76 spell spelllang=en_us
+"Custom commands
+"Build a .tex file to pdf
+command Pdf !clear; pdflatex.exe -quiet %
 
 "HTML closetag settings
 
@@ -109,7 +108,7 @@ set mouse=a
 autocmd vimenter * colorscheme gruvbox
 set t_8f=[38;2;%lu;%lu;%lum
 set t_8b=[48;2;%lu;%lu;%lum
-set termguicolors
+set term=screen-256color
 autocmd vimenter * let g:airline_theme='gruvbox'
 autocmd vimenter * let g:gruvbox_termcolors=16
 autocmd vimenter * set bg=dark
@@ -121,22 +120,32 @@ autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
 set noshowmode
 
 "Custom keybindings
+
 "Escape with double jj
 inoremap jj <ESC>
 noremap <C-Up> 5k
 noremap <C-Down> 5j
+
 "Tab always indents, Shift-Tab always deindents
+"In insert mode, tab still tabs forward from the cursor, not the whole line.
+"To tab the whole line, use <C-T>.
 inoremap <S-Tab> <C-D>
 nnoremap <Tab> >>_
 nnoremap <S-Tab> <<_
 vnoremap <Tab> >
 vnoremap <S-Tab> <
+
 "Reload screen also clears previous search
 nnoremap <C-l> :nohlsearch<CR><C-l>
+
+"Open ghci with \g
+nmap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
+
 "Shift-Space in insert mode enters normal mode
 "inoremap <S-Space> <Esc>
 "Shift-Space in normal mode enters insert mode
 "nnoremap <S-Space> i
+
 "Automatic closings
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
@@ -144,6 +153,4 @@ set pastetoggle=<F3>
 
 "Open split panes to right and bottom
 set splitright
-set splitbelow
-
-
+"set splitbelow

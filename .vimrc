@@ -11,6 +11,33 @@ set showcmd
 "Line numbers
 set number
 
+" Prepend ~/.backup to backupdir so that Vim will look for that directory
+" before littering the current dir with backups.
+" You need to do "mkdir ~/.backup" for this to work.
+set backupdir^=~/.backup
+
+" Also use ~/.backup for swap files. The trailing // tells Vim to incorporate
+" full path into swap file names.
+set dir^=~/.backup//
+
+" Ignore case when searching
+" - override this setting by tacking on \c or \C to your search term to make
+"   your search always case-insensitive or case-sensitive, respectively.
+set ignorecase
+
+"Turn on syntax highlighting
+filetype plugin indent on
+syntax on
+
+"Search highlighting WHILE search but not after
+set incsearch
+
+"Search highlighting AFTER search
+set hlsearch
+
+"Allow mouse scrolling and such
+set mouse=a
+
 "Tab settings
 set shiftwidth=4
 set softtabstop=0
@@ -25,6 +52,7 @@ autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
 autocmd FileType text setlocal textwidth=80 spell spelllang=en_us
 au BufRead,BufNewFile *.lhs set filetype=lhaskell
+au BufRead,BufNewFile *.tsx set filetype=javascript
 
 "Save view settings (e.g. cursor position, folds,...)
 autocmd BufWinLeave *.* mkview
@@ -33,6 +61,25 @@ autocmd BufWinEnter *.* silent loadview
 "Custom commands
 "Build a .tex file to pdf
 command Pdf !clear; pdflatex.exe -quiet %
+
+"Haskell vim syntax highlighting settings
+let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
+let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
+let g:haskell_enable_arrowsyntax = 1      " to enable highlighting of `proc`
+let g:haskell_enable_pattern_synonyms = 1 " to enable highlighting of `pattern`
+let g:haskell_enable_typeroles = 1        " to enable highlighting of type roles
+let g:haskell_enable_static_pointers = 1  " to enable highlighting of `static`
+let g:haskell_backpack = 1                " to enable highlighting of backpack keywords
+
+let g:haskell_indent_if = 3
+let g:haskell_indent_case = 2
+let g:haskell_indent_let = 4
+let g:haskell_indent_where = 6
+let g:haskell_indent_before_where = 2
+let g:haskell_indent_after_bare_where = 2
+let g:haskell_indent_do = 3
+let g:haskell_indent_in = 1
+let g:haskell_indent_guard = 2
 
 "HTML closetag settings
 
@@ -77,33 +124,6 @@ let g:closetag_shortcut = '>'
 "
 let g:closetag_close_shortcut = '<leader>>'
 
-" Prepend ~/.backup to backupdir so that Vim will look for that directory
-" before littering the current dir with backups.
-" You need to do "mkdir ~/.backup" for this to work.
-set backupdir^=~/.backup
-
-" Also use ~/.backup for swap files. The trailing // tells Vim to incorporate
-" full path into swap file names.
-set dir^=~/.backup//
-
-" Ignore case when searching
-" - override this setting by tacking on \c or \C to your search term to make
-"   your search always case-insensitive or case-sensitive, respectively.
-set ignorecase
-
-"Turn on syntax highlighting
-syntax on
-filetype plugin indent on
-
-"Search highlighting WHILE search but not after
-set incsearch
-
-"Search highlighting AFTER search
-set hlsearch
-
-"Allow mouse scrolling and such
-set mouse=a
-
 "Color scheme
 autocmd vimenter * colorscheme gruvbox
 set t_8f=[38;2;%lu;%lu;%lum
@@ -118,6 +138,10 @@ autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
 
 "Turn off mode indicator (airline is better)
 set noshowmode
+
+"Show conceal substitution characters
+setlocal conceallevel=2
+set concealcursor=nciv
 
 "Custom keybindings
 

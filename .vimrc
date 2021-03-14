@@ -8,8 +8,10 @@ set t_u7=
 "Show command keystrokes
 set showcmd
 
-"Line numbers
+"Line display stuff
 set number
+"set relativenumber
+"set cursorline
 
 " Prepend ~/.backup to backupdir so that Vim will look for that directory
 " before littering the current dir with backups.
@@ -50,7 +52,7 @@ set expandtab
 autocmd FileType make setlocal noexpandtab
 autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
-autocmd FileType text setlocal textwidth=80 spell spelllang=en_us
+autocmd FileType text setlocal textwidth=80 nospell "spelllang=en_us
 au BufRead,BufNewFile *.lhs set filetype=lhaskell
 au BufRead,BufNewFile *.tsx set filetype=javascript
 
@@ -150,6 +152,16 @@ inoremap jj <ESC>
 noremap <C-Up> 5k
 noremap <C-Down> 5j
 
+"Arrow & special movements go by display line, not actual line
+noremap  <Up>   gk
+noremap  <Down> gj
+noremap  <Home> g<Home>
+noremap  <End>  g<End>
+inoremap <Up>   <C-o>gk
+inoremap <Down> <C-o>gj
+inoremap <Home> <C-o>g<Home>
+inoremap <End>  <C-o>g<End>
+
 "Tab always indents, Shift-Tab always deindents
 "In insert mode, tab still tabs forward from the cursor, not the whole line.
 "To tab the whole line, use <C-T>.
@@ -164,6 +176,13 @@ nnoremap <C-l> :nohlsearch<CR><C-l>
 
 "Open ghci with \g
 nmap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
+
+"Insert lambda with \l
+inoremap <Leader>l <C-v>u03bb
+
+"Run Makefile with \m
+inoremap <Leader>m <C-o>:make<CR>
+nnoremap <Leader>m :make<CR>
 
 "Shift-Space in insert mode enters normal mode
 "inoremap <S-Space> <Esc>

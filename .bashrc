@@ -119,8 +119,13 @@ fi
 # load ruby
 eval "$(~/.rbenv/bin/rbenv init -)"
 
-source ~/.aliases
-source ~/.functions
+if [ -f ~/.aliases ]; then
+    . ~/.aliases
+fi
+
+if [ -f ~/.functions ]; then
+    . ~/.functions
+fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

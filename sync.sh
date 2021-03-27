@@ -2,7 +2,8 @@
 # -s : create symlink
 # -v : verbose
 # -f : remove existing destination files
-ln -svf /mnt/c/code/github/dotfiles/.bashrc ~/.bashrc
-ln -svf /mnt/c/code/github/dotfiles/.aliases ~/.aliases
-ln -svf /mnt/c/code/github/dotfiles/.functions ~/.functions
-ln -svf /mnt/c/code/github/dotfiles/.vimrc ~/.vimrc
+CWD=echo $(pwd)
+ln -svf $CWD/.bashrc ~/.bashrc
+ln -svf $CWD/.aliases ~/.aliases
+ln -svf $CWD/.functions ~/.functions
+ln -svf $CWD/.vimrc ~/.vimrc

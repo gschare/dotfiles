@@ -127,6 +127,7 @@ let g:closetag_shortcut = '>'
 let g:closetag_close_shortcut = '<leader>>'
 
 "Color scheme
+"and termcolors hackery
 autocmd vimenter * colorscheme gruvbox
 set t_8f=[38;2;%lu;%lu;%lum
 set t_8b=[48;2;%lu;%lu;%lum
@@ -141,8 +142,8 @@ autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
 "Turn off mode indicator (airline is better)
 set noshowmode
 
-"Show conceal substitution characters
-setlocal conceallevel=2
+"Conceal settings
+setlocal conceallevel=0
 set concealcursor=nciv
 
 "Custom keybindings

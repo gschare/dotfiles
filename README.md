@@ -27,7 +27,7 @@ These are just nice GNU things, generally.
 - jing: xml validation
 - pandoc: **highly** recommended, especially for LaTeXers and webdevs.
 - rclone & rsync: critical for cloud computing
-- unzip & gzip
+- unzip & gzip & p7zip-full
 - xsltproc: for testing xslt templates
 
 # Vim details

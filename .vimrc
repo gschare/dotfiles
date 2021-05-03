@@ -64,6 +64,13 @@ autocmd BufWinEnter *.* silent loadview
 "Build a .tex file to pdf
 command Pdf !clear; pdflatex.exe -quiet %
 
+"Rainbow parentheses highlighting
+augroup rainbow_paren
+    autocmd!
+    autocmd FileType lisp,scheme RainbowToggleOff
+augroup END
+let g:rainbow_active = 0
+
 "Haskell vim syntax highlighting settings
 let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
 let g:haskell_enable_recursivedo = 1      " to enable highlighting of `mdo` and `rec`
@@ -176,14 +183,24 @@ vnoremap <S-Tab> <
 nnoremap <C-l> :nohlsearch<CR><C-l>
 
 "Open ghci with \g
-nmap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
+nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
 
 "Insert lambda with \l
 inoremap <Leader>l <C-v>u03bb
 
 "Run Makefile with \m
-inoremap <Leader>m <C-o>:make<CR>
+"inoremap <Leader>m <C-o>:make<CR>
 nnoremap <Leader>m :make<CR>
+
+"The following tmux commands are extremely evil
+"Send command to rightmost tmux pane with \r
+nnoremap <Leader>r :silent execute "!tmux command-prompt -p 'Command to run:' 'send-keys -t {right} C-l C-a C-k \"\\%1\" Enter'"<CR><C-l>
+"Send previous command to rightmost tmux pane with \p
+nnoremap <Leader>p :silent execute "!tmux send-keys -t {right} C-l C-a C-k '\\!\\!' Enter"<CR><C-l>
+"Send make command to rightmost tmux pane with \m
+nnoremap <Leader>m :silent execute "!tmux send-keys -t {right} C-l C-a C-k 'make' Enter"<CR><C-l>
+"Send command to run the current file as a script with \b (requires '#!/bin/???' in header)
+nnoremap <Leader>b :silent execute "!tmux send-keys -t {right} C-l C-a C-k '%:p' Enter"<CR><C-l>
 
 "Shift-Space in insert mode enters normal mode
 "inoremap <S-Space> <Esc>

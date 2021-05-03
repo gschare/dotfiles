@@ -46,6 +46,7 @@ Here are what I use:
   - haskell-vim
   - lhaskell-vim (literate Haskell)
   - typescript-vim
+  - rainbow (rainbow syntax highlighting for parentheses and brackets; I couldn't get it to work)
   - vim-airline
   - vim-airline-themes
   - vim-closetag

@@ -143,7 +143,8 @@ autocmd vimenter * let g:airline_theme='gruvbox'
 autocmd vimenter * let g:gruvbox_termcolors=16
 autocmd vimenter * set bg=dark
 autocmd vimenter * hi! Normal ctermbg=NONE guibg=NONE
-autocmd vimenter * hi! NonText ctermbg=NONE guibg=NONE
+autocmd vimenter * hi! NonText ctermfg=darkgrey ctermbg=NONE guibg=NONE
+autocmd vimenter * hi! SpecialKey ctermfg=darkgrey
 autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
 
 "Turn off mode indicator (airline is better)
@@ -218,3 +219,8 @@ set pastetoggle=<F3>
 "Open split panes to right and bottom
 set splitright
 "set splitbelow
+
+"Display spaces and eol characters
+set lcs+=space:·
+set listchars+=eol:⏎,trail:⣿,nbsp:␣
+set invlist

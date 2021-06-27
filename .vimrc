@@ -222,5 +222,5 @@ set splitright
 
 "Display spaces and eol characters
 set lcs+=space:·
-set listchars+=eol:⏎,trail:⣿,nbsp:␣
+set listchars+=eol:\ ,trail:⣿,nbsp:␣,tab:➤,
 set invlist

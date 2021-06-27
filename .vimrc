@@ -190,7 +190,7 @@ inoremap <Leader>l <C-v>u03bb
 
 "Run Makefile with \m
 "inoremap <Leader>m <C-o>:make<CR>
-nnoremap <Leader>m :make<CR>
+nnoremap <Leader>m :silent execute "make"<CR><C-l>
 
 "The following tmux commands are extremely evil
 "Send command to rightmost tmux pane with \r
@@ -198,9 +198,12 @@ nnoremap <Leader>r :silent execute "!tmux command-prompt -p 'Command to run:' 's
 "Send previous command to rightmost tmux pane with \p
 nnoremap <Leader>p :silent execute "!tmux send-keys -t {right} C-l C-a C-k '\\!\\!' Enter"<CR><C-l>
 "Send make command to rightmost tmux pane with \m
-nnoremap <Leader>m :silent execute "!tmux send-keys -t {right} C-l C-a C-k 'make' Enter"<CR><C-l>
+nnoremap <Leader>n :silent execute "!tmux send-keys -t {right} C-l C-a C-k 'make' Enter"<CR><C-l>
 "Send command to run the current file as a script with \b (requires '#!/bin/???' in header)
 nnoremap <Leader>b :silent execute "!tmux send-keys -t {right} C-l C-a C-k '%:p' Enter"<CR><C-l>
+"Send command to run the current file in vim pane (requires '#!/bin/???' in
+"header)
+nnoremap <Leader>v :execute "!clear && %:p"<CR>
 
 "Shift-Space in insert mode enters normal mode
 "inoremap <S-Space> <Esc>

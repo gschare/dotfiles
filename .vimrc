@@ -183,6 +183,14 @@ vnoremap <S-Tab> <
 "Reload screen also clears previous search
 nnoremap <C-l> :nohlsearch<CR><C-l>
 
+"Insert date
+inoremap <Leader>d <C-r>=strftime('%Y-%m-%d')<CR>
+"Insert time
+inoremap <Leader>t <C-r>=strftime('%H:%M')<CR>
+"Insert datetime
+inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M')<CR>
+
+
 "Open ghci with \g
 nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
 

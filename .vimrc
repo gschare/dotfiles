@@ -158,6 +158,7 @@ set concealcursor=nciv
 
 "Escape with double jj
 inoremap jj <ESC>
+
 noremap <C-Up> 5k
 noremap <C-Down> 5j
 
@@ -170,6 +171,19 @@ inoremap <Up>   <C-o>gk
 inoremap <Down> <C-o>gj
 inoremap <Home> <C-o>g<Home>
 inoremap <End>  <C-o>g<End>
+
+"More of the same movement by display line, but actually redefining j and k
+nnoremap <C-j> j
+nnoremap <C-k> k
+nnoremap j gj
+nnoremap k gk
+onoremap <silent> j gj
+onoremap <silent> g gk
+"I would make equivalent changes for g0 and g$, but then I would have to make
+"0 accessible by <C-0> and $ by <C-$>, which are very inconvenient keystrokes.
+"Since these are used less frequently than j and k, I would be comfortable
+"using g0 and g$ as normal, or alternatively the <Home> and <End> defined
+"above.
 
 "Tab always indents, Shift-Tab always deindents
 "In insert mode, tab still tabs forward from the cursor, not the whole line.

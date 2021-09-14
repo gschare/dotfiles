@@ -110,7 +110,9 @@ if ! shopt -oq posix; then
 fi
 
 # load ruby
-eval "$(~/.rbenv/bin/rbenv init -)"
+if [ -f ~/.rbenv/bin/rbenv ]; then
+    eval "$(~/.rbenv/bin/rbenv init -)"
+fi
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like

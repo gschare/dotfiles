@@ -252,6 +252,8 @@ set splitright
 "set splitbelow
 
 "Display spaces and eol characters
-set lcs+=space:·
+if v:version >= 801
+    set lcs+=space:·
+endif
 set listchars+=eol:\ ,trail:⣿,nbsp:␣,tab:➤,
 set invlist

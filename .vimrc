@@ -40,6 +40,15 @@ set hlsearch
 "Allow mouse scrolling and such
 set mouse=a
 
+"If version <= 7.4, manually load plugins:
+if v:version <= 801
+    set runtimepath^=~/.vim/pack/dist/start/gruvbox
+    set runtimepath^=~/.vim/pack/dist/start/vim-airline
+    set runtimepath^=~/.vim/pack/dist/start/vim-airline-themes
+    set runtimepath^=~/.vim/pack/dist/start/vim-closetag
+    set runtimepath^=~/.vim/pack/dist/start/vim-rainbow
+endif
+
 "Tab settings
 set shiftwidth=4
 set softtabstop=0
@@ -177,8 +186,8 @@ nnoremap <C-j> j
 nnoremap <C-k> k
 nnoremap j gj
 nnoremap k gk
-onoremap <silent> j gj
-onoremap <silent> g gk
+"onoremap <silent> j gj
+"onoremap <silent> g gk
 "I would make equivalent changes for g0 and g$, but then I would have to make
 "0 accessible by <C-0> and $ by <C-$>, which are very inconvenient keystrokes.
 "Since these are used less frequently than j and k, I would be comfortable

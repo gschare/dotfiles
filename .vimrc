@@ -44,7 +44,7 @@ set hlsearch
 set mouse=a
 
 "If version <= 7.4, manually load plugins:
-if v:version <= 801
+if v:version <= 7.4
     set runtimepath^=~/.vim/pack/dist/start/gruvbox
     set runtimepath^=~/.vim/pack/dist/start/vim-airline
     set runtimepath^=~/.vim/pack/dist/start/vim-airline-themes
@@ -210,11 +210,11 @@ vnoremap <S-Tab> <
 nnoremap <C-l> :nohlsearch<CR><C-l>
 
 "Insert date
-inoremap <Leader>d <C-r>=strftime('%Y-%m-%d')<CR>
+"inoremap <Leader>d <C-r>=strftime('%Y-%m-%d')<CR>
 "Insert time
-inoremap <Leader>t <C-r>=strftime('%H:%M')<CR>
+"inoremap <Leader>t <C-r>=strftime('%H:%M')<CR>
 "Insert datetime
-inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M')<CR>
+"inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M')<CR>
 
 
 "Open ghci with \g
@@ -254,9 +254,6 @@ set pastetoggle=<F3>
 set splitright
 "set splitbelow
 
-"Display spaces and eol characters
-if v:version >= 801
-    set lcs+=space:·
-endif
-set listchars+=eol:\ ,trail:⣿,nbsp:␣,tab:➤,
-set invlist
+"Display spaces and other whitespace characters
+set list listchars=space:·,eol:\ ,trail:⣿,nbsp:␣,tab:➤,
+set list

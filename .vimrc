@@ -25,6 +25,8 @@ set backupdir^=~/.backup
 " full path into swap file names.
 set dir^=~/.backup//
 
+set undodir^=~/.undo
+
 " Ignore case when searching
 " - override this setting by tacking on \c or \C to your search term to make
 "   your search always case-insensitive or case-sensitive, respectively.
@@ -63,6 +65,7 @@ set expandtab
 "File-type specific
 autocmd FileType make setlocal noexpandtab
 autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
+autocmd FileType scheme, haskell inoremap <Leader>l <C-v>u03bb
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
 autocmd FileType text setlocal textwidth=80 nospell "spelllang=en_us
 au BufRead,BufNewFile *.lhs set filetype=lhaskell
@@ -216,12 +219,8 @@ nnoremap <C-l> :nohlsearch<CR><C-l>
 "Insert datetime
 "inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M')<CR>
 
-
 "Open ghci with \g
 nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
-
-"Insert lambda with \l
-inoremap <Leader>l <C-v>u03bb
 
 "Run Makefile with \m
 "inoremap <Leader>m <C-o>:make<CR>

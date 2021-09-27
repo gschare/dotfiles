@@ -20,3 +20,5 @@ alias processingjava="/mnt/c/Users/grsch/Desktop/processing-3.5.4/processing-jav
 alias bc="bc -q"
 alias chrome="chrome.exe"
 alias loclat="~/.rbenv/shims/lolcat"
+alias columbia="cd /mnt/c/Users/grsch/Google\ Drive/academics/columbia"
+alias clac="ssh gs3072@clac.cs.columbia.edu"

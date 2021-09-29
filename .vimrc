@@ -15,6 +15,7 @@ set showcmd
 set number
 "set relativenumber
 "set cursorline
+"set colorcolumn=80 "Highlight 80 char column to help with alignment.
 
 " Prepend ~/.backup to backupdir so that Vim will look for that directory
 " before littering the current dir with backups.
@@ -161,6 +162,10 @@ autocmd vimenter * hi! Normal ctermbg=NONE guibg=NONE
 autocmd vimenter * hi! NonText ctermfg=darkgrey ctermbg=NONE guibg=NONE
 autocmd vimenter * hi! SpecialKey ctermfg=darkgrey
 autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
+augroup vimrc_autocmds
+    autocmd BufEnter * highlight OverLength ctermbg=red guibg=#592929
+    autocmd BufEnter * match OverLength /\%74v.*/
+augroup END
 
 "Turn off mode indicator (airline is better)
 set noshowmode

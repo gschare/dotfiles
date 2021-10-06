@@ -15,7 +15,7 @@ set showcmd
 set number
 "set relativenumber
 "set cursorline
-"set colorcolumn=80 "Highlight 80 char column to help with alignment.
+set colorcolumn=81
 
 " Prepend ~/.backup to backupdir so that Vim will look for that directory
 " before littering the current dir with backups.
@@ -68,7 +68,8 @@ autocmd FileType make setlocal noexpandtab
 autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
 "autocmd FileType scheme, haskell inoremap <Leader>l <C-v>u03bb
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
-autocmd FileType text setlocal tw=79 nospell "spelllang=en_us
+autocmd FileType text setlocal tw=79 fo=tcqln spelllang=en_us
+autocmd FileType markdown setlocal tw=79 fo=tcqln spelllang=en_us
 autocmd FileType tex setlocal tw=79
 autocmd BufReadPost *.tex setlocal tw=79
 au BufRead,BufNewFile *.lhs set filetype=lhaskell

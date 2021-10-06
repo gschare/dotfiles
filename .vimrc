@@ -68,7 +68,7 @@ autocmd FileType make setlocal noexpandtab
 autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
 autocmd FileType scheme, haskell inoremap <Leader>l <C-v>u03bb
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
-autocmd FileType text setlocal tw=80 fo=tcqlna spelllang=en_us
+autocmd FileType text setlocal tw=80 fo=tcqln spelllang=en_us
 autocmd FileType markdown setlocal tw=80 fo=tcqln spelllang=en_us
 au BufRead,BufNewFile *.lhs set filetype=lhaskell
 au BufRead,BufNewFile *.tsx set filetype=javascript
@@ -164,8 +164,8 @@ autocmd vimenter * hi! NonText ctermfg=darkgrey ctermbg=NONE guibg=NONE
 autocmd vimenter * hi! SpecialKey ctermfg=darkgrey
 autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
 augroup vimrc_autocmds
-    autocmd BufEnter * highlight OverLength ctermbg=red guibg=#592929
-    autocmd BufEnter * match OverLength /\%74v.*/
+    "autocmd BufEnter * highlight OverLength ctermbg=red guibg=#592929
+    "autocmd BufEnter * match OverLength /\%80v.*/
 augroup END
 
 "Turn off mode indicator (airline is better)

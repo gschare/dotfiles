@@ -28,6 +28,9 @@ set dir^=~/.backup//
 
 set undodir^=~/.undo
 
+"Buffers
+
+
 " Ignore case when searching
 " - override this setting by tacking on \c or \C to your search term to make
 "   your search always case-insensitive or case-sensitive, respectively.
@@ -212,9 +215,9 @@ nnoremap k gk
 "In insert mode, tab still tabs forward from the cursor, not the whole line.
 "To tab the whole line, use <C-T>.
 inoremap <S-Tab> <C-D>
-nnoremap <Tab> >>_
-nnoremap <S-Tab> <<_
-vnoremap <Tab> >
+"nnoremap <Tab> >>_
+"nnoremap <S-Tab> <<_
+"vnoremap <Tab> >
 vnoremap <S-Tab> <
 
 "Reload screen also clears previous search

@@ -109,13 +109,6 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# Greg's settings:
-
-# load ruby
-if [ -f ~/.rbenv/bin/rbenv ]; then
-    eval "$(~/.rbenv/bin/rbenv init -)"
-fi
-
 # Alias definitions.
 # You may want to put all your additions into a separate file like
 # ~/.bash_aliases, instead of adding them here directly.
@@ -128,9 +121,5 @@ fi
 if [ -f ~/.bash_functions ]; then
     . ~/.bash_functions
 fi
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 umask 077

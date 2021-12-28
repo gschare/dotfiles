@@ -69,6 +69,7 @@ set expandtab
 "File-type specific
 autocmd FileType make setlocal noexpandtab
 autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
+autocmd FileType asm setlocal tabstop=8 softtabstop=8 shiftwidth=8
 "autocmd FileType scheme, haskell inoremap <Leader>l <C-v>u03bb
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
 autocmd FileType text setlocal tw=79 fo=tcqln spelllang=en_us

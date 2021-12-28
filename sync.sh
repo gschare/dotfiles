@@ -1,9 +1,10 @@
+#!/bin/sh
 # absolute paths are necessary to ensure the symlink succeeds
 # -s : create symlink
 # -v : verbose
-# -f : remove existing destination files
-CWD=echo $(pwd)
-ln -svf $CWD/.bashrc ~/.bashrc
-ln -svf $CWD/.aliases ~/.aliases
-ln -svf $CWD/.functions ~/.functions
-ln -svf $CWD/.vimrc ~/.vimrc
+CWD="$(pwd)"
+ln -svi $CWD/.bashrc ~/.bashrc
+ln -svi $CWD/.bash_aliases ~/.bash_aliases
+ln -svi $CWD/.bash_functions ~/.bash_functions
+ln -svi $CWD/.vimrc ~/.vimrc
+ln -svi $CWD/.tmux.conf ~/.tmux.conf

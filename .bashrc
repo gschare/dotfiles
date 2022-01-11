@@ -131,3 +131,9 @@ fi
 if [ -f ~/.bash_functions ]; then
     . ~/.bash_functions
 fi
+
+# Splash.
+# Terminal window must be big enough and not in a tmux session.
+if [ $COLUMNS -gt 80 -a $LINES -gt 20 -a -z "$TMUX" ]; then
+    splash
+fi

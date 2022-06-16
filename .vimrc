@@ -8,13 +8,18 @@ set nocompatible
 "See https://www.reddit.com/r/bashonubuntuonwindows/comments/ijys54/has_anyone_else_started_seeing_vim_open_in/
 set t_u7=
 
+"Tell vim the escape codes it needs for italics
+set t_ZH=[3m
+set t_ZR=[23m
+
 "Show command keystrokes
 set showcmd
 
 "Line display stuff
 set number
-"set relativenumber
-"set cursorline
+"relative number
+"set rnu
+set cursorline
 set colorcolumn=81
 
 " Prepend ~/.backup to backupdir so that Vim will look for that directory
@@ -35,10 +40,6 @@ set undodir^=~/.undo
 " - override this setting by tacking on \c or \C to your search term to make
 "   your search always case-insensitive or case-sensitive, respectively.
 set ignorecase
-
-"Turn on syntax highlighting
-filetype plugin indent on
-syntax on
 
 "Search highlighting WHILE search but not after
 set incsearch
@@ -66,11 +67,20 @@ set autoindent
 set smartindent
 set expandtab
 
+"Turn off mode indicator (airline is better)
+set noshowmode
+
+"Conceal settings
+setlocal conceallevel=0
+set concealcursor=nciv
+
+"Turn on filetype detection
+filetype plugin indent on
+
 "File-type specific
 autocmd FileType make setlocal noexpandtab
 autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
 autocmd FileType asm setlocal tabstop=8 softtabstop=8 shiftwidth=8
-"autocmd FileType scheme, haskell inoremap <Leader>l <C-v>u03bb
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
 autocmd FileType text setlocal tw=79 fo=tcqln spelllang=en_us
 autocmd FileType markdown setlocal tw=79 fo=tcqln spelllang=en_us
@@ -78,21 +88,86 @@ autocmd FileType tex setlocal tw=79
 autocmd BufReadPost *.tex setlocal tw=79
 au BufRead,BufNewFile *.lhs set filetype=lhaskell
 au BufRead,BufNewFile *.tsx set filetype=javascript
+autocmd BufRead,BufNewFile,BufReadPost *.scala set ft=scala
 
 "Save view settings (e.g. cursor position, folds,...)
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview
+
+"Color scheme
+"and termcolors hackery
+set termguicolors
+if !exists('g:loaded_color')
+    let g:loaded_color = 1
+
+    let iterm_profile = $ITERM_PROFILE
+    if iterm_profile == "dark"
+        set background=dark
+    else
+        set background=light
+    endif
+
+    colorscheme gruvbox
+    let g:gruvbox_termcolors=16
+    let g:gruvbox_transparent_bg=1
+    let g:airline_theme='gruvbox'
+endif
+if !exists('g:syntax_on')
+    syntax enable
+endif
+
+au vimenter * hi! EndOfBuffer ctermbg=none guibg=NONE
+au vimenter * hi! SpecialKey ctermfg=darkgrey
+au vimenter * hi! Terminal ctermbg=none guibg=NONE
+au vimenter * hi! Normal ctermbg=none guibg=NONE
+highlight Comment cterm=italic
 
 "Custom commands
 "Build a .tex file to pdf
 command Pdf !clear; pdflatex.exe -quiet %
 
 "Rainbow parentheses highlighting
-augroup rainbow_paren
-    autocmd!
-    autocmd FileType lisp,scheme RainbowToggleOff
-augroup END
-let g:rainbow_active = 0
+"augroup rainbow_paren
+"    autocmd!
+"    autocmd FileType lisp,scheme RainbowToggleOff
+"augroup END
+"let g:rainbow_active = 0
+
+"vim-slime settings
+let g:slime_target = "tmux"
+let g:slime_default_config = {"socket_name": "default", "target_pane": "{last}"}
+let g:slime_haskell_ghci_add_let = 0
+let g:slime_python_ipython = 1
+let g:slime_no_mappings = 1
+xmap <Leader>s <Plug>SlimeRegionSend
+nmap <Leader>s <Plug>SlimeParagraphSend
+"No mapping for this, but can always redo config with `:SlimeConfig`!
+
+"coc settings
+if v:false
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ CheckBackspace() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+endif
+
+inoremap <silent><expr> <c-@> coc#refresh()
+
+nnoremap <silent> K :call ShowDocumentation()<CR>
+
+function! ShowDocumentation()
+  if CocAction('hasProvider', 'hover')
+    call CocActionAsync('doHover')
+  else
+    call feedkeys('K', 'in')
+  endif
+endfunction
 
 "Haskell vim syntax highlighting settings
 let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
@@ -156,31 +231,6 @@ let g:closetag_shortcut = '>'
 "
 let g:closetag_close_shortcut = '<leader>>'
 
-"Color scheme
-"and termcolors hackery
-autocmd vimenter * colorscheme gruvbox
-set t_8f=[38;2;%lu;%lu;%lum
-set t_8b=[48;2;%lu;%lu;%lum
-set term=screen-256color
-autocmd vimenter * let g:airline_theme='gruvbox'
-autocmd vimenter * let g:gruvbox_termcolors=16
-autocmd vimenter * set bg=dark
-autocmd vimenter * hi! Normal ctermbg=NONE guibg=NONE
-autocmd vimenter * hi! NonText ctermfg=darkgrey ctermbg=NONE guibg=NONE
-autocmd vimenter * hi! SpecialKey ctermfg=darkgrey
-autocmd vimenter * hi! Terminal ctermbg=NONE guibg=NONE
-augroup vimrc_autocmds
-    "autocmd BufEnter * highlight OverLength ctermbg=darkgray guibg=#592929
-    "autocmd BufEnter * match OverLength /\%81v.*/
-augroup END
-
-"Turn off mode indicator (airline is better)
-set noshowmode
-
-"Conceal settings
-setlocal conceallevel=0
-set concealcursor=nciv
-
 "Custom keybindings
 
 "Escape with double jj
@@ -225,11 +275,11 @@ vnoremap <S-Tab> <
 nnoremap <C-l> :nohlsearch<CR><C-l>
 
 "Insert date
-"inoremap <Leader>d <C-r>=strftime('%Y-%m-%d')<CR>
+inoremap <Leader>d <C-r>=strftime('%Y-%m-%d')<CR>
 "Insert time
-"inoremap <Leader>t <C-r>=strftime('%H:%M')<CR>
+inoremap <Leader>t <C-r>=strftime('%H:%M')<CR>
 "Insert datetime
-"inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M')<CR>
+inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M:%S%z')<CR>
 
 "Open ghci with \g
 nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
@@ -240,16 +290,16 @@ nnoremap <Leader>m :silent execute "make"<CR><C-l>
 
 "The following tmux commands are extremely evil
 "Send command to rightmost tmux pane with \r
-nnoremap <Leader>r :silent execute "!tmux command-prompt -p 'Command to run:' 'send-keys -t {right} C-l C-a C-k \"\\%1\" Enter'"<CR><C-l>
+"nnoremap <Leader>r :silent execute "!tmux command-prompt -p 'Command to run:' 'send-keys -t {right} C-l C-a C-k \"\\%1\" Enter'"<CR><C-l>
 "Send previous command to rightmost tmux pane with \p
-nnoremap <Leader>p :silent execute "!tmux send-keys -t {right} C-l C-a C-k '\\!\\!' Enter"<CR><C-l>
-"Send make command to rightmost tmux pane with \m
-nnoremap <Leader>n :silent execute "!tmux send-keys -t {right} C-l C-a C-k 'make' Enter"<CR><C-l>
+"nnoremap <Leader>p :silent execute "!tmux send-keys -t {right} C-l C-a C-k '\\!\\!' Enter"<CR><C-l>
+"Send make command to rightmost tmux pane with \n
+"nnoremap <Leader>n :silent execute "!tmux send-keys -t {right} C-l C-a C-k 'make' Enter"<CR><C-l>
 "Send command to run the current file as a script with \b (requires '#!/bin/???' in header)
-nnoremap <Leader>b :silent execute "!tmux send-keys -t {right} C-l C-a C-k '%:p' Enter"<CR><C-l>
+"nnoremap <Leader>b :silent execute "!tmux send-keys -t {right} C-l C-a C-k '%:p' Enter"<CR><C-l>
 "Send command to run the current file in vim pane (requires '#!/bin/???' in
 "header)
-nnoremap <Leader>v :execute "!clear && %:p"<CR>
+"nnoremap <Leader>v :execute "!clear && %:p"<CR>
 
 "Shift-Space in insert mode enters normal mode
 "inoremap <S-Space> <Esc>
@@ -266,5 +316,16 @@ set splitright
 "set splitbelow
 
 "Display spaces and other whitespace characters
-set list listchars=space:·,eol:\ ,trail:⣿,nbsp:␣,tab:➤,
-set list
+let is_lcs_on = 1
+nnoremap <Leader>l :call LcsToggle()<cr>
+function! LcsToggle()
+    if g:is_lcs_on == 0
+        setlocal list listchars=space:·,eol:\ ,trail:⣿,nbsp:␣,tab:➤,
+        let g:is_lcs_on = 1
+    else
+        setlocal list listchars=space:\ ,eol:\ ,trail:\ ,nbsp:\ ,tab:│·,
+        let g:is_lcs_on = 0
+    endif
+endfunction
+
+call LcsToggle()

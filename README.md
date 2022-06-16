@@ -45,7 +45,7 @@ These are just nice GNU things, generally.
 - xsltproc: for testing xslt templates
 - ripgrep: better than grep for searching for text in codebases
 - fzf: fuzzy finder, great for finding files
-- 
+- fd: better than `find`
 
 # Vim details
 My vim configuration, in addition to my .vimrc, involves several lightweight packages and some slight tinkering in the `after/` directory.
@@ -68,6 +68,12 @@ Here are what I use:
   - vim-airline-themes
   - vim-closetag
   - vim-jsx-typescript (React syntax highlighting)
+  - [vim-solidity](https://github.com/tomlion/vim-solidity)
+  - [coc.nvim](https://github.com/neoclide/coc.nvim)
+    - [installation guide](https://github.com/neoclide/coc.nvim/wiki/Install-coc.nvim#using-vim8s-native-package-manager)
+    - :CocInstall coc-solidity
+    - :CocInstall coc-jedi
+  - vim-slime
 
 These are all fairly self-explanatory.
 

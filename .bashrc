@@ -47,12 +47,12 @@ esac
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+    # We have color support; assume it's compliant with Ecma-48
+    # (ISO/IEC-6429). (Lack of such support is extremely rare, and such a case
+    # would tend to support setf rather than setaf.)
+    color_prompt=yes
     else
-	color_prompt=
+    color_prompt=
     fi
 fi
 
@@ -88,11 +88,17 @@ fi
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
 # some more ls aliases
-alias ll='ls -alFh'
-alias la='ls -AF'
-alias l='ls -CF'
-alias lr='ls -ARF'
-alias l1='ls -A1F'
+alias ls='ls -G'
+alias ll='ls -alFhG'
+alias la='ls -AFG'
+alias l='ls -CFG'
+alias lr='ls -ARFG'
+alias l1='ls -A1FG'
+
+export CLICOLORS=1
+# dir,sym,socket,pipe,exec,block,char,...
+export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
+#export LSCOLORS=exfxcxdxbxegedabagacad
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -124,6 +130,8 @@ fi
 # ~/.bash_aliases, instead of adding them here directly.
 # See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
@@ -134,6 +142,13 @@ fi
 
 # Splash.
 # Terminal window must be big enough and not in a tmux session.
-if [ $COLUMNS -gt 80 -a $LINES -gt 20 -a -z "$TMUX" ]; then
+if [ $COLUMNS -gt 80 -a $LINES -gt 20 -a -z "$TMUX" -a 0 -eq 1 ]; then
     splash
 fi
+
+# Launch tmux at start. Disabled.
+if [ -z "$TMUX" -a 0 -eq 1 ]; then
+    tmux
+fi
+
+[ -f "/Users/gregory/.ghcup/env" ] && source "/Users/gregory/.ghcup/env" # ghcup-env

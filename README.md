@@ -1,6 +1,20 @@
 These are my dotfiles.
 They are here in order to make it easy for me to keep my Linux configuration consistent across machines.
 
+# Note on `.bash_profile`
+My `.bash_profile` is where the path manipulation and machine-specific stuff goes.
+Some of the variables it exports are assumed to exist by other pieces of
+software, but I am not tracking the file here because it wouldn't make sense.
+However, so that I can get properly installed on new machines, here are the
+environment variables that need to be exported:
+
+- `TRASHDIR`: where to put deleted files after `toss`.
+- `DEVDIR`: where all coding stuff goes. Usually `~/dev`.
+- `REPODIR`: where github repos are stored. Usually `~/dev/github`.
+- `SCRATCHDIR`: where misc coding files and 'scratch-work' is done. Usually
+  `~/dev/scratch`.
+- `NOTESDIR`: where notes go. Usually `~/notes`.
+
 # Software to install
 In addition to these config files, the critical pieces of software I use are:
 - git
@@ -29,6 +43,9 @@ These are just nice GNU things, generally.
 - rclone & rsync: critical for cloud computing
 - unzip & gzip & p7zip-full
 - xsltproc: for testing xslt templates
+- ripgrep: better than grep for searching for text in codebases
+- fzf: fuzzy finder, great for finding files
+- 
 
 # Vim details
 My vim configuration, in addition to my .vimrc, involves several lightweight packages and some slight tinkering in the `after/` directory.

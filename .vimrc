@@ -103,8 +103,10 @@ if !exists('g:loaded_color')
     let iterm_profile = $ITERM_PROFILE
     if iterm_profile == "dark"
         set background=dark
-    else
+    elseif iterm_profile == "light"
         set background=light
+    else
+        set background=dark
     endif
 
     colorscheme gruvbox

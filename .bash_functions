@@ -7,12 +7,12 @@ GREEN='\[\e[01;32m\]'
 BLUE='\[\e[01;34m\]'
 RED='\[\e[01;91m\]'
 WHITE='\[\e[00m\]'
-GRAY='\[\e[1;30m\]'
+YELLOW='\[\e[01;37m\]'
 
 PRE= && [ -z "$TMUX" ] && PRE="$GREEN\u@\h$WHITE:"
 DIR="$BLUE\w"
 BRANCH="$RED\$(parse_git_branch)"
-END=" $GRAY\$$WHITE "
+END=" $YELLOW\$$WHITE "
 export PS1="$PRE$DIR$BRANCH$END"
 
 # use vim as default editor
@@ -71,3 +71,119 @@ splash() {
     read -n1 -s   # Wait for any keypress before displaying prompt.
     tput cnorm    # Restore cursor.
 }
+
+openssm() {
+    MNGRLOC=~/My\ Drive/manager.7z
+    7z x -bb0 "$MNGRLOC" -p$PWDMNGPWD -y -o/tmp > /dev/null
+    if [ $? -eq 0 ]
+    then
+        $EDITOR '/tmp/passwords.txt' && 7z u -bb0 "$MNGRLOC" '/tmp/passwords.txt' -p$PWDMNGPWD > /dev/null
+        if [ $? -eq 0 ]
+        then
+            rm -f '/tmp/passwords.txt'
+        else
+            echo "An error occurred while adding the file back to archive.\n /tmp/passwords.txt is left for recovery." >&2
+            return 2
+        fi
+    else
+        echo "An error occurred while opening the archive." >&2
+        return 2
+    fi
+}
+
+wordle() {
+    cd $DEVDIR/github/wordle && ./wordle
+}
+
+function theme {
+    echo -ne "\033]50;SetProfile=$1\a"
+    export ITERM_PROFILE=$1
+    if [ $1 = "dark" ]; then
+        if [ ! -z "$TMUX" ]; then
+            echo "in tmux, switch to dark"
+            tmux set-environment ITERM_PROFILE dark
+        fi
+    else
+        if [ ! -z "$TMUX" ]; then
+            echo "in tmux, switch to light"
+            tmux set-environment ITERM_PROFILE light
+        fi
+    fi
+}
+
+nchttp() {
+    local in=$(cat -)
+    (
+    echo "HTTP/1.0 200 OK";
+    echo;
+    echo $in
+    ) | nc -l localhost $1
+}
+
+toss() {
+    TS=$(date -u +"%Y%m%dT%H%M%SZ")
+    mv -i $1 "$TRASHDIR"/"$TS-$1"
+}
+
+# fzf options
+export FZF_DEFAULT_COMMAND="fd"
+export FZF_DEFAULT_OPTS="
+    --multi
+    --layout=reverse
+    --marker='*'
+    --margin=10%,10%,10%,10%
+    --bind 'tab:toggle'
+    --bind 'ctrl-i:toggle'
+    --bind 'ctrl-o:execute(glow -p {})'
+    --preview-window=wrap
+    --cycle"
+    #--bind 'ctrl-g:toggle-preview'
+    #--bind 'ctrl-p:preview(echo {})'
+    # bindings:
+    # C-i: toggle
+    # Tab: toggle and move down
+    # S-Tab: toggle and move up
+    # C-j: down
+    # C-k: up
+    # C-n: down
+    # C-a: beginning of line
+    # C-e: end of line
+    # M-d: delete word ahead
+    # C-w: delete word behind
+    # C-m: accept
+    # Ent: accept
+    # C-p: preview
+    # C-u: delete line behind
+    # C-y: yank
+    # C-o: open in glow
+    # C-l: refresh screen
+    # C-h: delete
+    # C-c: exit(130)
+    # Esc: exit(130)
+    # C-g: quit
+    # C-q: quit
+    # C-d: delete char/abort if query is empty
+    # C-b: back one char
+    # C-f: ahead one char
+    # M-f: ahead one word
+    # M-b: behind one word
+    # pgup: screen up
+    # pgdn: screen down
+    #
+    # unused:
+    # C-t
+    # C-r
+    # C-v
+    # C-o
+    # C-s
+    # C-x
+    # C-z
+    # C-6/C-^
+    # C-]
+    # C-\
+    # C-/
+    # C-space
+    # f[1-12]
+    # alt-*
+    # ctrl-alt-*
+

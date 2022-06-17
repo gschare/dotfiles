@@ -125,6 +125,57 @@ toss() {
     mv -i $1 "$TRASHDIR"/"$TS-$1"
 }
 
+note() {
+    print_usage () { echo "Usage: note [open|new]" 1>&2; }
+    if [[ $1 = "open" || -z $1 ]]; then
+        IFS=$'\n' out=("$(fd . $NOTESDIR | \
+                fzf --expect=ctrl-o,ctrl-e \
+                    --ansi \
+                    --preview='glow -p {}')")
+        key=$(head -1 <<< $out)
+        files=$(tail -n +2 <<< $out)
+        if [[ -n "$files" ]]; then
+            if [ "$key" = "ctrl-t" ]; then
+                open $files
+            elif [ "$key" = "ctrl-e" ]; then
+                TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
+                vim "$NOTESDIR/$TS.md"
+            else
+                ${EDITOR:-vim} $files
+            fi
+        fi
+    elif [[ $1 = "new" ]]; then
+        TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
+        vim "$NOTESDIR/$TS.md"
+    else
+        print_usage
+    fi
+}
+
+scratch() {
+    if [[ $1 = "open" || -z $1 ]]; then
+        IFS=$'\n' out=("$(fd . $SCRATCHDIR | \
+                fzf --expect=ctrl-o,ctrl-e \
+                    --ansi \
+                    --preview='less {}')")
+        key=$(head -1 <<< $out)
+        files=$(tail -n +2 <<< $out)
+        if [[ -n "$files" ]]; then
+            if [ "$key" = "ctrl-t" ]; then
+                open $files
+            elif [ "$key" = "ctrl-e" ]; then
+                cd $SCRATCHDIR
+                ${EDITOR:-vim}
+            else
+                ${EDITOR:-vim} $files
+            fi
+        fi
+    else
+        cd $SCRATCHDIR
+        ${EDITOR:-vim} $1
+    fi
+}
+
 # fzf options
 export FZF_DEFAULT_COMMAND="fd"
 export FZF_DEFAULT_OPTS="
@@ -134,7 +185,6 @@ export FZF_DEFAULT_OPTS="
     --margin=10%,10%,10%,10%
     --bind 'tab:toggle'
     --bind 'ctrl-i:toggle'
-    --bind 'ctrl-o:execute(glow -p {})'
     --preview-window=wrap
     --cycle"
     #--bind 'ctrl-g:toggle-preview'

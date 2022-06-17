@@ -127,17 +127,28 @@ toss() {
 
 note() {
     print_usage () { echo "Usage: note [open|new]" 1>&2; }
+    # No point in searching the filenames since they contain no useful data.
+    # Instead, filter down using ripgrep on change.
+    INITIAL_QUERY=""
+    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
     if [[ $1 = "open" || -z $1 ]]; then
-        IFS=$'\n' out=("$(fd . $NOTESDIR | \
-                fzf --expect=ctrl-o,ctrl-e \
+        IFS=$'\n' out=("$(fd . $NOTESDIR | tail -r | \
+                fzf --ansi \
+                    --query "$INITIAL_QUERY" \
+                    --disabled \
+                    --prompt 'Notes> ' \
+                    --bind "change:reload:$RG_PREFIX -l {q} $NOTESDIR || true" \
+                    --expect=ctrl-o,ctrl-r,ctrl-t \
                     --ansi \
-                    --preview='glow -p {}')")
+                    --layout=reverse \
+                    --preview="$RG_PREFIX {q} {}"
+                    )")
         key=$(head -1 <<< $out)
         files=$(tail -n +2 <<< $out)
         if [[ -n "$files" ]]; then
             if [ "$key" = "ctrl-t" ]; then
                 open $files
-            elif [ "$key" = "ctrl-e" ]; then
+            elif [ "$key" = "ctrl-r" ]; then
                 TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
                 vim "$NOTESDIR/$TS.md"
             else
@@ -153,17 +164,26 @@ note() {
 }
 
 scratch() {
+    INITIAL_QUERY=""
+    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
     if [[ $1 = "open" || -z $1 ]]; then
-        IFS=$'\n' out=("$(fd . $SCRATCHDIR | \
-                fzf --expect=ctrl-o,ctrl-e \
+        IFS=$'\n' out=("$(fd . $SCRATCHDIR | tail -r | \
+                fzf --ansi \
+                    --query "$INITIAL_QUERY" \
+                    --disabled \
+                    --prompt 'Notes> ' \
+                    --bind "change:reload:$RG_PREFIX -l {q} $SCRATCHDIR || true" \
+                    --expect=ctrl-o,ctrl-r,ctrl-t \
                     --ansi \
-                    --preview='less {}')")
+                    --layout=reverse \
+                    --preview="$RG_PREFIX {q} {}"
+                    )")
         key=$(head -1 <<< $out)
         files=$(tail -n +2 <<< $out)
         if [[ -n "$files" ]]; then
             if [ "$key" = "ctrl-t" ]; then
                 open $files
-            elif [ "$key" = "ctrl-e" ]; then
+            elif [ "$key" = "ctrl-r" ]; then
                 cd $SCRATCHDIR
                 ${EDITOR:-vim}
             else

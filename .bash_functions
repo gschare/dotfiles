@@ -125,24 +125,52 @@ toss() {
     mv -i $1 "$TRASHDIR"/"$TS-$1"
 }
 
+search () {
+    # ripgrep fuzzy find. Given regex term to search.
+    # $1: the directory or file to run search in. By default, use current directory.
+    # $2: regex term. Default match everything ('.').
+    print_usage () { echo "Usage: $0 [path] [regex]" 1>&2; }
+    if [ -z $1 ]; then
+        DIR='.'
+    else
+        DIR="$1"
+    fi
+    if [ -z $2 ]; then
+        INITIAL_QUERY='.'
+    else
+        INITIAL_QUERY="$2"
+    fi
+
+    # special behavior options
+    [ -z "$DISPLAY_DIR" ] && DISPLAY_DIR=$DIR
+    [ -z "$REVERSE" ] && REVERSE="false"
+    if [ $REVERSE = "true" ]; then
+        DIRECTION="r"
+    else
+        DIRECTION=""
+    fi
+
+    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case"
+    IFS=$'\n' out=("$(
+            FZF_DEFAULT_COMMAND="$RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR" \
+            fzf --ansi \
+                --disabled \
+                --prompt "$DISPLAY_DIR> " \
+                --bind "change:reload:$RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
+                --expect=ctrl-o,ctrl-r,ctrl-t \
+                --ansi \
+                --layout=reverse \
+                --preview="$RG_PREFIX {q} {} --sort$DIRECTION path"
+                )")
+    echo "${out[@]}"
+}
+
 note() {
     print_usage () { echo "Usage: note [open|new]" 1>&2; }
     # No point in searching the filenames since they contain no useful data.
     # Instead, filter down using ripgrep on change.
-    INITIAL_QUERY=""
-    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
     if [[ $1 = "open" || -z $1 ]]; then
-        IFS=$'\n' out=("$(fd . $NOTESDIR | tail -r | \
-                fzf --ansi \
-                    --query "$INITIAL_QUERY" \
-                    --disabled \
-                    --prompt 'Notes> ' \
-                    --bind "change:reload:$RG_PREFIX -l {q} $NOTESDIR || true" \
-                    --expect=ctrl-o,ctrl-r,ctrl-t \
-                    --ansi \
-                    --layout=reverse \
-                    --preview="$RG_PREFIX {q} {}"
-                    )")
+        out=$(REVERSE=true DISPLAY_DIR="Notes" search $NOTESDIR)
         key=$(head -1 <<< $out)
         files=$(tail -n +2 <<< $out)
         if [[ -n "$files" ]]; then
@@ -165,34 +193,27 @@ note() {
 
 scratch() {
     INITIAL_QUERY=""
-    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case "
     if [[ $1 = "open" || -z $1 ]]; then
-        IFS=$'\n' out=("$(fd . $SCRATCHDIR | tail -r | \
-                fzf --ansi \
-                    --query "$INITIAL_QUERY" \
-                    --disabled \
-                    --prompt 'Notes> ' \
-                    --bind "change:reload:$RG_PREFIX -l {q} $SCRATCHDIR || true" \
-                    --expect=ctrl-o,ctrl-r,ctrl-t \
-                    --ansi \
-                    --layout=reverse \
-                    --preview="$RG_PREFIX {q} {}"
-                    )")
+        out=$(DISPLAY_DIR="Scratch" search $SCRATCHDIR)
         key=$(head -1 <<< $out)
         files=$(tail -n +2 <<< $out)
         if [[ -n "$files" ]]; then
             if [ "$key" = "ctrl-t" ]; then
                 open $files
             elif [ "$key" = "ctrl-r" ]; then
+                CWD=$(pwd)
                 cd $SCRATCHDIR
                 ${EDITOR:-vim}
+                cd $CWD
             else
                 ${EDITOR:-vim} $files
             fi
         fi
     else
+        CWD=$(pwd)
         cd $SCRATCHDIR
         ${EDITOR:-vim} $1
+        cd $CWD
     fi
 }
 

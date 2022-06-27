@@ -162,15 +162,23 @@ search () {
                 --layout=reverse \
                 --preview="$RG_PREFIX {q} {} --sort$DIRECTION path"
                 )")
+    ret_code=$?
     echo "${out[@]}"
+    if [[ $ret_code -ne 0 ]]; then
+        return $ret_code
+    fi
 }
 
 note() {
-    print_usage () { echo "Usage: note [open|new]" 1>&2; }
+    print_usage () { echo "Usage: note [open|new|app]" 1>&2; }
     # No point in searching the filenames since they contain no useful data.
     # Instead, filter down using ripgrep on change.
     if [[ $1 = "open" || -z $1 ]]; then
         out=$(REVERSE=true DISPLAY_DIR="Notes" search $NOTESDIR)
+        ret_code=$?
+        if [[ $ret_code -ne 0 ]]; then
+            return $ret_code
+        fi
         key=$(head -1 <<< $out)
         files=$(tail -n +2 <<< $out)
         if [[ -n "$files" ]]; then
@@ -188,6 +196,8 @@ note() {
     elif [[ $1 = "new" ]]; then
         TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
         vim "$NOTESDIR/$TS.md"
+    elif [[ $1 = "app" ]]; then
+        note open && note app
     else
         print_usage
     fi

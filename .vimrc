@@ -70,9 +70,7 @@ set expandtab
 "Turn off mode indicator (airline is better)
 set noshowmode
 
-"Conceal settings
-setlocal conceallevel=0
-set concealcursor=nciv
+set backspace=2
 
 "Turn on filetype detection
 filetype plugin indent on
@@ -93,6 +91,10 @@ autocmd BufRead,BufNewFile,BufReadPost *.scala set ft=scala
 "Save view settings (e.g. cursor position, folds,...)
 autocmd BufWinLeave *.* mkview
 autocmd BufWinEnter *.* silent loadview
+
+"autocmd FileType markdown inoremap <CR><CR> <Space><Space><CR>
+"autocmd FileType markdown inoremap <CR> <CR><CR>
+"autocmd FileType markdown inoremap <CR>- <CR>-<Space>
 
 "Color scheme
 "and termcolors hackery
@@ -119,10 +121,14 @@ if !exists('g:syntax_on')
 endif
 
 au vimenter * hi! EndOfBuffer ctermbg=none guibg=NONE
-au vimenter * hi! SpecialKey ctermfg=darkgrey
+au BufWinEnter * hi! SpecialKey ctermfg=239 guifg=#4e4e4e
 au vimenter * hi! Terminal ctermbg=none guibg=NONE
 au vimenter * hi! Normal ctermbg=none guibg=NONE
 highlight Comment cterm=italic
+
+"Conceal settings
+au BufWinEnter * set conceallevel=2
+au BufWinEnter * set concealcursor=nc
 
 "Custom commands
 "Build a .tex file to pdf
@@ -170,6 +176,9 @@ function! ShowDocumentation()
     call feedkeys('K', 'in')
   endif
 endfunction
+
+"Show buffers in airline
+let g:airline#extensions#tabline#enabled = 1
 
 "Haskell vim syntax highlighting settings
 let g:haskell_enable_quantification = 1   " to enable highlighting of `forall`
@@ -284,7 +293,10 @@ inoremap <Leader>t <C-r>=strftime('%H:%M')<CR>
 inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M:%S%z')<CR>
 
 "Open ghci with \g
-nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
+autocmd FileType haskell nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
+
+"Open netrw with \e
+nnoremap <Leader>e :Vexplore<CR>
 
 "Run Makefile with \m
 "inoremap <Leader>m <C-o>:make<CR>
@@ -318,16 +330,23 @@ set splitright
 "set splitbelow
 
 "Display spaces and other whitespace characters
-let is_lcs_on = 1
+let is_lcs_on = 0
 nnoremap <Leader>l :call LcsToggle()<cr>
 function! LcsToggle()
     if g:is_lcs_on == 0
-        setlocal list listchars=space:·,eol:\ ,trail:⣿,nbsp:␣,tab:➤,
+            setlocal list listchars=space:·,eol:\ ,trail:⣿,nbsp:␣,tab:➤,
         let g:is_lcs_on = 1
     else
-        setlocal list listchars=space:\ ,eol:\ ,trail:\ ,nbsp:\ ,tab:│·,
+        if &filetype ==# 'markdown'
+            "␣
+            "․
+            "~
+            setlocal list listchars=space:\ ,eol:\ ,trail:․,nbsp:\ ,tab:│·,
+        else
+            setlocal list listchars=space:\ ,eol:\ ,trail:\ ,nbsp:\ ,tab:│·,
+        endif
         let g:is_lcs_on = 0
     endif
 endfunction
 
-call LcsToggle()
+autocmd FileType,BufEnter * call LcsToggle()

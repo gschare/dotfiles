@@ -179,8 +179,10 @@ note() {
             elif [ "$key" = "ctrl-r" ]; then
                 TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
                 vim "$NOTESDIR/$TS.md"
-            else
+            elif [ "$key" = "ctrl-o" ]; then
                 ${EDITOR:-vim} $files
+            else
+                echo $files
             fi
         fi
     elif [[ $1 = "new" ]]; then

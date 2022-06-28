@@ -151,8 +151,16 @@ search () {
     fi
 
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case"
+    if [ ! -z "$RECENTS" ]; then
+        DEF_CMD="cat $RECENTS; $RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
+    else
+        DEF_CMD="$RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
+    fi
+    # Idea: implement a key that changes the environment to toggle between
+    # by most recently opened, most recently modified, and alphabetical.
+    # Problem: folders are fucked anyway in terms of path sort.
     IFS=$'\n' out=("$(
-            FZF_DEFAULT_COMMAND="$RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR" \
+            FZF_DEFAULT_COMMAND="$DEF_CMD" \
             fzf --ansi \
                 --disabled \
                 --prompt "$DISPLAY_DIR> " \
@@ -170,11 +178,31 @@ search () {
 }
 
 note() {
-    print_usage () { echo "Usage: note [open|new|app]" 1>&2; }
+    print_usage () { echo -e "Usage: note [open|new|app]" 1>&2; }
+    add_recent () {
+        python3 -c """
+NUM_RECENT = 20
+with open('$NOTESDIR/.notes_history', 'r') as fp:
+    recents = fp.readlines()
+print(recents)
+
+try:
+    i = recents.index('$1')
+    recents.pop(i)
+except ValueError:
+    pass
+recents.insert(0, '$1')
+
+with open('$NOTESDIR/.notes_history', 'w') as fp:
+    s = '\n'.join(recents[:NUM_RECENT])
+    print(s)
+    fp.write(s)
+        """
+    }
     # No point in searching the filenames since they contain no useful data.
     # Instead, filter down using ripgrep on change.
     if [[ $1 = "open" || -z $1 ]]; then
-        out=$(REVERSE=true DISPLAY_DIR="Notes" search $NOTESDIR)
+        out=$(REVERSE=true DISPLAY_DIR="Notes" RECENTS="$NOTESDIR/.notes_history" search $NOTESDIR)
         ret_code=$?
         if [[ $ret_code -ne 0 ]]; then
             return $ret_code
@@ -184,18 +212,30 @@ note() {
         if [[ -n "$files" ]]; then
             if [ "$key" = "ctrl-t" ]; then
                 open $files
+                add_recent $files
             elif [ "$key" = "ctrl-r" ]; then
                 TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
-                vim "$NOTESDIR/$TS.md"
+                ${EDITOR:-vim} "$NOTESDIR/$TS.md"
+                add_recent "$NOTESDIR/$TS.md"
             elif [ "$key" = "ctrl-o" ]; then
                 ${EDITOR:-vim} $files
+                add_recent $files
             else
                 echo $files
             fi
         fi
     elif [[ $1 = "new" ]]; then
+        if [[ ! -z $2 ]]; then
+            if [[ ! -d $2 ]]; then
+                mkdir -p "$NOTESDIR/$2"
+            fi
+            new_note_path="$NOTESDIR/$2"
+        else
+            new_note_path="$NOTESDIR"
+        fi
         TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
-        vim "$NOTESDIR/$TS.md"
+        ${EDITOR:-vim} "$new_note_path/$TS.md"
+        add_recent "$new_note_path/$TS.md"
     elif [[ $1 = "app" ]]; then
         note open && note app
     else

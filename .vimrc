@@ -96,6 +96,13 @@ autocmd BufWinEnter *.* silent loadview
 "autocmd FileType markdown inoremap <CR> <CR><CR>
 "autocmd FileType markdown inoremap <CR>- <CR>-<Space>
 
+"Conceal settings
+au BufWinEnter * set conceallevel=2
+au BufWinEnter * set concealcursor=nc
+"let g:vim_markdown_conceal_code_blocks = 0
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_override_foldtext = 0
+
 "Color scheme
 "and termcolors hackery
 set termguicolors
@@ -125,10 +132,12 @@ au BufWinEnter * hi! SpecialKey ctermfg=239 guifg=#4e4e4e
 au vimenter * hi! Terminal ctermbg=none guibg=NONE
 au vimenter * hi! Normal ctermbg=none guibg=NONE
 highlight Comment cterm=italic
-
-"Conceal settings
-au BufWinEnter * set conceallevel=2
-au BufWinEnter * set concealcursor=nc
+highlight Todo ctermbg=yellow guibg=#ebb434
+highlight htmlItalic cterm=italic ctermbg=none guibg=NONE
+highlight htmlBold cterm=bold ctermbg=none guibg=NONE
+highlight htmlBoldItalic ctermbg=none guibg=NONE
+highlight htmlLink ctermfg=cyan guifg=cyan
+au FileType markdown set termguicolors
 
 "Custom commands
 "Build a .tex file to pdf
@@ -296,7 +305,16 @@ inoremap <Leader>f <C-r>=strftime('%Y-%m-%d %H:%M:%S%z')<CR>
 autocmd FileType haskell nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<CR>
 
 "Open netrw with \e
-nnoremap <Leader>e :Vexplore<CR>
+nnoremap <Leader>e :Lexplore<CR>
+let g:netrw_preview = 1
+let g:netrw_browser_viewer='open'
+
+"Quickfix keybinds
+nnoremap <C-j> :cn<CR>
+nnoremap <C-k> :cp<CR>
+
+"New command to save with timestamp in notes dir
+command Wn :w `date -u +'\%Y-\%m-\%dT\%H\%M\%SZ'`
 
 "Run Makefile with \m
 "inoremap <Leader>m <C-o>:make<CR>
@@ -349,4 +367,16 @@ function! LcsToggle()
     endif
 endfunction
 
-autocmd FileType,BufEnter * call LcsToggle()
+function! LcsOff()
+    if &filetype ==# 'markdown'
+        "␣
+        "․
+        "~
+        setlocal list listchars=space:\ ,eol:\ ,trail:․,nbsp:\ ,tab:│·,
+    else
+        setlocal list listchars=space:\ ,eol:\ ,trail:\ ,nbsp:\ ,tab:│·,
+    endif
+    let g:is_lcs_on = 0
+endfunction
+
+autocmd BufRead * call LcsOff()

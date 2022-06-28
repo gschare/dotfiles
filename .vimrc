@@ -306,15 +306,33 @@ autocmd FileType haskell nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<C
 
 "Open netrw with \e
 nnoremap <Leader>e :Lexplore<CR>
-let g:netrw_preview = 1
+
+let g:netrw_preview = 1  "Use vertical split
+"let g:netrw_liststyle = 3 "Tree style
+let g:netrw_winsize = 30 "Only take 30% of window
+let g:netrw_browse_split = 0 "Open in current window (default)
 let g:netrw_browser_viewer='open'
+augroup AutoDeleteNetrwHiddenBuffers
+  au!
+  "au FileType netrw setlocal bufhidden=wipe
+augroup end
+
+function! NetrwMapping()
+    "nmap <buffer> p P<C-w>p
+    nmap <buffer> <TAB> mf
+endfunction
+
+augroup netrw_mapping
+  autocmd!
+  autocmd filetype netrw call NetrwMapping()
+augroup END
 
 "Quickfix keybinds
 nnoremap <C-j> :cn<CR>
 nnoremap <C-k> :cp<CR>
 
 "New command to save with timestamp in notes dir
-command Wn :w `date -u +'\%Y-\%m-\%dT\%H\%M\%SZ'`
+command Note :e `date -u +'$NOTESDIR/\%Y-\%m-\%dT\%H\%M\%SZ.md'`
 
 "Run Makefile with \m
 "inoremap <Leader>m <C-o>:make<CR>

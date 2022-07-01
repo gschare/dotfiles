@@ -319,6 +319,7 @@ augroup end
 
 function! NetrwMapping()
     "nmap <buffer> p P<C-w>p
+    nmap <buffer> p <CR><C-w><C-w>
     nmap <buffer> <TAB> mf
 endfunction
 

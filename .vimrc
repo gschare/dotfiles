@@ -307,6 +307,7 @@ autocmd FileType haskell nnoremap <Leader>g :silent !clear; ghci %<CR>:redraw!<C
 "Open netrw with \e
 nnoremap <Leader>e :Lexplore<CR>
 
+let g:netrw_banner = 0
 let g:netrw_preview = 1  "Use vertical split
 "let g:netrw_liststyle = 3 "Tree style
 let g:netrw_winsize = 30 "Only take 30% of window

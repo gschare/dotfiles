@@ -164,7 +164,7 @@ search () {
             fzf --ansi \
                 --disabled \
                 --prompt "$DISPLAY_DIR> " \
-                --bind "change:reload:$RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
+                --bind "change:reload:[ -z {q} ] && cat $RECENTS; $RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
                 --expect=ctrl-o,ctrl-r,ctrl-t \
                 --ansi \
                 --layout=reverse \
@@ -184,7 +184,7 @@ note() {
 NUM_RECENT = 20
 with open('$NOTESDIR/.notes_history', 'r') as fp:
     recents = fp.readlines()
-print(recents)
+recents = [r.rstrip('\n') for r in recents]
 
 try:
     i = recents.index('$1')
@@ -195,8 +195,8 @@ recents.insert(0, '$1')
 
 with open('$NOTESDIR/.notes_history', 'w') as fp:
     s = '\n'.join(recents[:NUM_RECENT])
-    print(s)
     fp.write(s)
+    fp.write('\n')
         """
     }
     # No point in searching the filenames since they contain no useful data.

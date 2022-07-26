@@ -136,7 +136,7 @@ au BufWinEnter * hi! SpecialKey ctermfg=239 guifg=#4e4e4e
 au vimenter * hi! Terminal ctermbg=none guibg=NONE
 au vimenter * hi! Normal ctermbg=none guibg=NONE
 highlight Comment cterm=italic
-highlight Todo ctermbg=yellow guibg=#ebb434
+highlight Todo ctermbg=109 guibg=#83a598
 highlight htmlItalic cterm=italic ctermbg=none guibg=NONE
 highlight htmlBold cterm=bold ctermbg=none guibg=NONE
 highlight htmlBoldItalic ctermbg=none guibg=NONE

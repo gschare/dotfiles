@@ -24,6 +24,9 @@ export TERM="xterm-256color"
 # use vim keybinds. this is a terrible idea.
 #set -o vi
 
+# git aliases
+git config --global alias.root 'rev-parse --show-toplevel'
+
 weather() {
     PLACE=
     VERBOSE='?0'
@@ -152,7 +155,7 @@ search () {
 
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case"
     if [ ! -z "$RECENTS" ]; then
-        DEF_CMD="cat $RECENTS; $RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
+        DEF_CMD="echo \"$RECENTS\"; $RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
     else
         DEF_CMD="$RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
     fi
@@ -164,13 +167,14 @@ search () {
             fzf --ansi \
                 --disabled \
                 --prompt "$DISPLAY_DIR> " \
-                --bind "change:reload:[ -z {q} ] && cat $RECENTS; $RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
+                --bind "change:reload:[ -z {q} ] && echo \"$RECENTS\"; $RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
                 --expect=ctrl-o,ctrl-r,ctrl-t \
                 --ansi \
                 --layout=reverse \
                 --preview="$RG_PREFIX {q} {} --sort$DIRECTION path"
                 )")
     ret_code=$?
+    cd $CWD
     echo "${out[@]}"
     if [[ $ret_code -ne 0 ]]; then
         return $ret_code
@@ -178,7 +182,9 @@ search () {
 }
 
 note() {
-    print_usage () { echo -e "Usage: note [open|new|app]" 1>&2; }
+    # [Epic] TODO(gts): rewrite in Rust
+
+    print_usage () { echo -e "Usage: note [open|new|app|home]" 1>&2; }
     add_recent () {
         python3 -c """
 NUM_RECENT = 20
@@ -201,22 +207,36 @@ with open('$NOTESDIR/.notes_history', 'w') as fp:
     }
     # No point in searching the filenames since they contain no useful data.
     # Instead, filter down using ripgrep on change.
+    CWD=$(pwd)
+    cd $NOTESDIR
     if [[ $1 = "open" || -z $1 ]]; then
-        out=$(REVERSE=true DISPLAY_DIR="Notes" RECENTS="$NOTESDIR/.notes_history" search $NOTESDIR)
+        out=$(REVERSE=true DISPLAY_DIR="Notes" RECENTS="$([ -f 'home.md' ] && echo 'home.md' ; cat $NOTESDIR/.notes_history)" search)
         ret_code=$?
         if [[ $ret_code -ne 0 ]]; then
+            cd $CWD
             return $ret_code
         fi
         key=$(head -1 <<< $out)
         files=$(tail -n +2 <<< $out)
         if [[ -n "$files" ]]; then
             if [ "$key" = "ctrl-t" ]; then
+                # TODO: can we do string processing so the thing listed in fzf
+                # is different than the thing we open? so first few lines are displayed, e.g.
+                # using a clever algorithm
+                # ^^ then I can finally use this for other stuff, if we have
+                # loosely coupled metadata.
+
+                # add (proper) tagging support. For notes, just keep it in file.
+                # Notes need no metadata! The only information at all relevant
+                # is their filepath (folder and filename) and contents.
+                # The cached first lines thing is just for nice display and can
+                # be regenerated using the filepath and contents.
                 open $files
                 add_recent $files
             elif [ "$key" = "ctrl-r" ]; then
                 TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
                 ${EDITOR:-vim} "$NOTESDIR/$TS.md"
-                add_recent "$NOTESDIR/$TS.md"
+                [ -f "$NOTESDIR/$TS.md" ] && add_recent "$TS.md"
             elif [ "$key" = "ctrl-o" ]; then
                 ${EDITOR:-vim} $files
                 add_recent $files
@@ -235,12 +255,16 @@ with open('$NOTESDIR/.notes_history', 'w') as fp:
         fi
         TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
         ${EDITOR:-vim} "$new_note_path/$TS.md"
-        add_recent "$new_note_path/$TS.md"
+        [ -f "$2/$TS.md" ] && add_recent "$2/$TS.md"
     elif [[ $1 = "app" ]]; then
         note open && note app
+    elif [[ $1 = "home" ]]; then
+        ${EDITOR:-vim} "$NOTESDIR/home.md"
+        add_recent "home.md"
     else
         print_usage
     fi
+    cd $CWD
 }
 
 scratch() {

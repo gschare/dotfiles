@@ -98,10 +98,14 @@ autocmd BufWinEnter *.* silent loadview
 
 "Conceal settings
 au BufWinEnter * set conceallevel=2
-au BufWinEnter * set concealcursor=nc
+au BufWinEnter * set concealcursor=
 "let g:vim_markdown_conceal_code_blocks = 0
 let g:vim_markdown_folding_disabled = 1
 let g:vim_markdown_override_foldtext = 0
+let g:vim_markdown_strikethrough = 1
+let g:vim_markdown_new_list_item_indent = 0
+
+au FileType markdown set foldmethod=marker
 
 "Color scheme
 "and termcolors hackery
@@ -368,7 +372,7 @@ set splitright
 "set splitbelow
 
 "Display spaces and other whitespace characters
-let is_lcs_on = 0
+let g:is_lcs_on = 0
 nnoremap <Leader>l :call LcsToggle()<cr>
 function! LcsToggle()
     if g:is_lcs_on == 0
@@ -399,4 +403,4 @@ function! LcsOff()
     let g:is_lcs_on = 0
 endfunction
 
-autocmd BufRead * call LcsOff()
+autocmd BufReadPost,FileType * call LcsOff()

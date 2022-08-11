@@ -152,3 +152,4 @@ if [ -z "$TMUX" -a 0 -eq 1 ]; then
 fi
 
 [ -f "/Users/gregory/.ghcup/env" ] && source "/Users/gregory/.ghcup/env" # ghcup-env
+. "$HOME/.cargo/env"

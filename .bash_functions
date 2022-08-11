@@ -115,11 +115,11 @@ function theme {
 }
 
 nchttp() {
-    local in=$(cat -)
+    local in="$(cat -)"
     (
     echo "HTTP/1.0 200 OK";
     echo;
-    echo $in
+    echo "$in"
     ) | nc -l localhost $1
 }
 
@@ -155,7 +155,7 @@ search () {
 
     RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case"
     if [ ! -z "$RECENTS" ]; then
-        DEF_CMD="echo \"$RECENTS\"; $RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
+        DEF_CMD="printf \"$RECENTS\"; $RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
     else
         DEF_CMD="$RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
     fi
@@ -167,8 +167,8 @@ search () {
             fzf --ansi \
                 --disabled \
                 --prompt "$DISPLAY_DIR> " \
-                --bind "change:reload:[ -z {q} ] && echo \"$RECENTS\"; $RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
-                --expect=ctrl-o,ctrl-r,ctrl-t \
+                --bind "change:reload:[ -z {q} ] && printf \"$RECENTS\"; $RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
+                --expect=ctrl-o,ctrl-r,ctrl-t,ctrl-s \
                 --ansi \
                 --layout=reverse \
                 --preview="$RG_PREFIX {q} {} --sort$DIRECTION path"
@@ -184,10 +184,13 @@ search () {
 note() {
     # [Epic] TODO(gts): rewrite in Rust
 
-    print_usage () { echo -e "Usage: note [open|new|app|home]" 1>&2; }
+    print_usage () { echo -e "Usage: note [open|new|app|home|host]" 1>&2; }
     add_recent () {
+        if [ ! -f $NOTESDIR/.notes_history ]; then
+            touch $NOTESDIR/.notes_history
+        fi
         python3 -c """
-NUM_RECENT = 20
+NUM_RECENT = 10
 with open('$NOTESDIR/.notes_history', 'r') as fp:
     recents = fp.readlines()
 recents = [r.rstrip('\n') for r in recents]
@@ -205,12 +208,40 @@ with open('$NOTESDIR/.notes_history', 'w') as fp:
     fp.write('\n')
         """
     }
+    star_note () {
+        if [ ! -f $NOTESDIR/.starred_notes ]; then
+            touch $NOTESDIR/.starred_notes
+        fi
+        python3 -c """
+with open('$NOTESDIR/.starred_notes', 'r') as fp:
+    stars = fp.readlines()
+stars = [s.rstrip('\n') for s in stars]
+if '$1' in stars:
+    stars.remove('$1')
+    print('Unstarring %s' % '$1')
+else:
+    stars.append('$1')
+    print('Starring %s' % '$1')
+with open('$NOTESDIR/.starred_notes', 'w') as fp:
+    s = '\n'.join(stars)
+    fp.write(s)
+    fp.write('\n')
+        """
+    }
     # No point in searching the filenames since they contain no useful data.
     # Instead, filter down using ripgrep on change.
     CWD=$(pwd)
     cd $NOTESDIR
     if [[ $1 = "open" || -z $1 ]]; then
-        out=$(REVERSE=true DISPLAY_DIR="Notes" RECENTS="$([ -f 'home.md' ] && echo 'home.md' ; cat $NOTESDIR/.notes_history)" search)
+        out=$(CWD=$CWD REVERSE=true DISPLAY_DIR="Notes"
+              RECENTS="$([ -f $NOTESDIR/.starred_notes ] &&
+                           printf "\033[1;33m" &&
+                           cat $NOTESDIR/.starred_notes ;
+                           [ -f $NOTESDIR/.notes_history ] &&
+                           printf "\033[1;34m" &&
+                           cat $NOTESDIR/.notes_history &&
+                           printf "\033[0m")"
+              search)
         ret_code=$?
         if [[ $ret_code -ne 0 ]]; then
             cd $CWD
@@ -240,6 +271,10 @@ with open('$NOTESDIR/.notes_history', 'w') as fp:
             elif [ "$key" = "ctrl-o" ]; then
                 ${EDITOR:-vim} $files
                 add_recent $files
+            elif [ "$key" = "ctrl-s" ]; then
+                for fp in $files; do
+                    star_note $fp
+                done
             else
                 echo $files
             fi
@@ -261,6 +296,14 @@ with open('$NOTESDIR/.notes_history', 'w') as fp:
     elif [[ $1 = "home" ]]; then
         ${EDITOR:-vim} "$NOTESDIR/home.md"
         add_recent "home.md"
+    elif [[ $1 = "host" ]]; then
+        files=$(note open)
+        (for fp in $files; do
+            cat "$fp"
+            echo
+            echo '---'
+            echo
+        done) | pandoc -f gfm -s | nchttp 3000
     else
         print_usage
     fi

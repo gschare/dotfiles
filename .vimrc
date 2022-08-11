@@ -81,7 +81,7 @@ autocmd FileType scheme setlocal tabstop=2 shiftwidth=2
 autocmd FileType asm setlocal tabstop=8 softtabstop=8 shiftwidth=8
 autocmd BufReadPost *.rkt,*.rktl set filetype=scheme
 autocmd FileType text setlocal tw=79 fo=tcqln spelllang=en_us
-autocmd FileType markdown setlocal tw=79 fo=tcqln spelllang=en_us
+autocmd FileType markdown setlocal tw=79 fo=tcqln spelllang=en_us shiftwidth=2 tabstop=2
 autocmd FileType tex setlocal tw=79
 autocmd BufReadPost *.tex setlocal tw=79
 au BufRead,BufNewFile *.lhs set filetype=lhaskell
@@ -336,6 +336,11 @@ augroup END
 "Quickfix keybinds
 nnoremap <C-j> :cn<CR>
 nnoremap <C-k> :cp<CR>
+"Buffer keybinds
+nnoremap [b :bprevious<CR>
+nnoremap ]b :bnext<CR>
+nnoremap [B :bfirst<CR>
+nnoremap ]B :blast<CR>
 
 "New command to save with timestamp in notes dir
 command Note :e `date -u +'$NOTESDIR/\%Y-\%m-\%dT\%H\%M\%SZ.md'`
@@ -343,6 +348,8 @@ command Note :e `date -u +'$NOTESDIR/\%Y-\%m-\%dT\%H\%M\%SZ.md'`
 "Run Makefile with \m
 "inoremap <Leader>m <C-o>:make<CR>
 nnoremap <Leader>m :silent execute "make"<CR><C-l>
+
+au FileType markdown inoremap <Leader>- * [ ] 
 
 "The following tmux commands are extremely evil
 "Send command to rightmost tmux pane with \r

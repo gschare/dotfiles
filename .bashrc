@@ -116,10 +116,10 @@ if ! shopt -oq posix; then
 fi
 
 # load ruby
-#
-#if [ -f ~/.rbenv/bin/rbenv ]; then
-#    eval "$(~/.rbenv/bin/rbenv init -)"
-#fi
+
+if [ -f ~/.rbenv/bin/rbenv ]; then
+    eval "$(~/.rbenv/bin/rbenv init -)"
+fi
 
 #export NVM_DIR="$HOME/.nvm"
 #[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -151,5 +151,7 @@ if [ -z "$TMUX" -a 0 -eq 1 ]; then
     tmux
 fi
 
+#[ -f "/Users/gregory/.ghcup/env" ] && source "/Users/gregory/.ghcup/env" # ghcup-env
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
 [ -f "/Users/gregory/.ghcup/env" ] && source "/Users/gregory/.ghcup/env" # ghcup-env
-. "$HOME/.cargo/env"

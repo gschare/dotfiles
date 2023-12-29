@@ -124,11 +124,93 @@ nchttp() {
 }
 
 toss() {
-    TS=$(date -u +"%Y%m%dT%H%M%SZ")
+    TS=$(date -u +"%y-%m-%d_%H-%M-%SZ")
     mv -i $1 "$TRASHDIR"/"$TS-$1"
 }
 
+timer() {
+  IFS=: # separate by ':' character
+  set -- $* # set positional variables to the words of the argument (separated by ':')
+  secs=$(( ${1#0} * 3600 + ${2#0} * 60 + ${3#0} )) # calculate time in seconds
+
+  len=$secs
+  lens="$((len%60))"
+  lenm="$(((len/60)%60))"
+  lenh="$((len/3600))"
+
+  plurals=$([ "$lens" -ne '1' ] && echo "s" || echo "")
+  pluralm=$([ "$lenm" -ne '1' ] && echo "s" || echo "")
+  pluralh=$([ "$lenh" -ne '1' ] && echo "s" || echo "")
+
+#  if [ "$lenh" -eq '0' -a "$lenm" -eq '0' ]
+#  then
+#      say -v Karen -r 200 "Timer started for $lens second$plurals."
+#  elif [ "$lenh" -eq '0' ]
+#  then
+#      say -v Karen -r 200 "Timer started for $lenm minute$pluralm and $lens second$plurals."
+#  else
+#      say -v Karen -r 200 "Timer started for $lenh hour$pluralh $lenm minute$pluralm and $lens second$plurals."
+#  fi
+
+  while [ $secs -gt 0 ]
+  do
+    printf "\r%02d:%02d:%02d" $((secs/3600)) $(( (secs/60)%60)) $((secs%60))
+    secs=0 #$(( $secs - 1 ))
+    sleep 1
+  done
+  for ((i=0;i<3;i++))
+  do
+      printf "\a"
+      sleep 0.15
+  done
+  echo
+
+  rate=250
+  voice="Karen"
+
+  if [ "$lenh" -eq '0' -a "$lenm" -eq '0' ]
+  then
+      say -v "$voice" -r "$rate" "Timer for $lens second$plurals is finished."
+  elif [ "$lenh" -eq '0' -a "$lens" -eq '0' ]
+  then
+      say -v "$voice" -r "$rate" "Timer for $lenm minute$pluralm is finished."
+  elif [ "$lenm" -eq '0' -a "$lens" -eq '0' ]
+  then
+      say -v "$voice" -r "$rate" "Timer for $lenh hour$pluralh is finished."
+  elif [ "$lens" -eq '0' ]
+  then
+      say -v "$voice" -r "$rate" "Timer for $lenh hour$pluralh and $lenm minute$pluralm is finished."
+  elif [ "$lenm" -eq '0' ]
+  then
+      say -v "$voice" -r "$rate" "Timer for $lenh hour$pluralh and $lens second$plurals is finished."
+  elif [ "$lenh" -eq '0' ]
+  then
+      say -v "$voice" -r "$rate" "Timer for $lenm minute$pluralm and $lens second$plurals is finished."
+  else
+      say -v "$voice" -r "$rate" "Timer for $lenh hour$pluralh $lenm minute$pluralm and $lens second$plurals is finished."
+  fi
+}
+
+stopwatch() {
+  secs=0
+  while true
+  do
+    printf "\r%02d:%02d:%02d" $((secs/3600)) $(( (secs/60)%60)) $((secs%60))
+    secs=$(( $secs + 1 ))
+    sleep 1
+  done
+  echo
+}
+
 search () {
+    strip-note-context () {
+        cut -d'|' -f1 | tr -d ' '
+    }
+    add-note-context () {
+        while IFS='$\n' read -r in; do
+            echo "$in | $(grep -v '<meta.*>' $in | head -c 140 | tr '\n' ' ' | tr -d '|') | $(head -40 $in | tr '\n' ' ' | tr -d '|')"
+        done
+    }
     # ripgrep fuzzy find. Given regex term to search.
     # $1: the directory or file to run search in. By default, use current directory.
     # $2: regex term. Default match everything ('.').
@@ -153,32 +235,53 @@ search () {
         DIRECTION=""
     fi
 
-    RG_PREFIX="rg --column --line-number --no-heading --color=always --smart-case"
+    RG_PREFIX='rg --column --line-number --no-heading --color=always --smart-case'
     if [ ! -z "$RECENTS" ]; then
-        DEF_CMD="printf \"$RECENTS\"; $RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
+        #DEF_CMD="echo \"$(printf "$RECENTS"; $RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR | add-note-context)\""
+        #printf "$DEF_CMD" >&2
+        #sh -c "echo $DEF_CMD" >&2
+        true
     else
-        DEF_CMD="$RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR"
+        #DEF_CMD="echo \"$($RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR | add-note-context)\""
+        true
     fi
+    ALL_NOTES="$($RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR)"
+    #(printf "$RECENTS"; ($RG_PREFIX -l --sort$DIRECTION path $INITIAL_QUERY $DIR | add-note-context)) >&2
     # Idea: implement a key that changes the environment to toggle between
     # by most recently opened, most recently modified, and alphabetical.
     # Problem: folders are fucked anyway in terms of path sort.
-    IFS=$'\n' out=("$(
-            FZF_DEFAULT_COMMAND="$DEF_CMD" \
+    IFS='$\n' out=("$(
+            (printf "$RECENTS"; printf "$ALL_NOTES") |
             fzf --ansi \
                 --disabled \
                 --prompt "$DISPLAY_DIR> " \
-                --bind "change:reload:[ -z {q} ] && printf \"$RECENTS\"; $RG_PREFIX -l {q} --sort$DIRECTION path $DIR || true" \
-                --expect=ctrl-o,ctrl-r,ctrl-t,ctrl-s \
-                --ansi \
+                --expect=ctrl-o,ctrl-r,ctrl-t,ctrl-s,ctrl-v,ctrl-x \
                 --layout=reverse \
-                --preview="$RG_PREFIX {q} {} --sort$DIRECTION path"
+                --preview-window=down \
+                --margin=2%,2%,2%,2% \
+                --preview="$RG_PREFIX --context 1 {q} {} --sort$DIRECTION path"
                 )")
+ #--bind "change:reload:[ -z {q} ] && printf \"$RECENTS\"; $RG_PREFIX -l {q} --sort$DIRECTION path $DIR | add-note-context || true" \
+ #--preview="echo {3} | $RG_PREFIX --context 1 {q} --sort$DIRECTION path"
+                #--preview='echo {3}'
+                #--delimiter='|' \
+                #--with-nth=1,2 \
     ret_code=$?
-    cd $CWD
+    cd "$CWD"
     echo "${out[@]}"
     if [[ $ret_code -ne 0 ]]; then
         return $ret_code
     fi
+}
+
+new_note_name() {
+   D="$(date -u +"$NOTESDIR/\%y.\%m.\%d-\%H.\%M.md")"
+   i=1
+   while [[ -f "$D" ]]; do
+       D="$(date -u -j -v +"$i"m +"$NOTESDIR/\%y.\%m.\%d-\%H.\%M.md")"
+       i=$(($i+1))
+   done
+   echo "$D"
 }
 
 note() {
@@ -228,6 +331,64 @@ with open('$NOTESDIR/.starred_notes', 'w') as fp:
     fp.write('\n')
         """
     }
+    prompt_link () {
+        out=$(CWD=$CWD REVERSE=true DISPLAY_DIR="Link to"
+              RECENTS="$([ -f $NOTESDIR/.starred_notes ] &&
+                           printf "\033[1;33m" &&
+                           cat $NOTESDIR/.starred_notes ;
+                           #[ -f $NOTESDIR/.notes_history ] &&
+                           printf "\033[1;34m" &&
+                           #cat $NOTESDIR/.notes_history &&
+                           ls -ut1 | head -20 &&
+                           printf "\033[0m")"
+              search $HOME/notes )
+        ret_code=$?
+        if [[ $ret_code -ne 0 ]]; then
+            cd "$CWD"
+            return $ret_code
+        fi
+        key=$(head -1 <<< $out)
+        files=$(tail -n +2 <<< $out)
+        echo $files
+    }
+    link_note () {
+        src="$1"
+        for dst in $2;
+        do
+            ln=1
+            while true
+            do
+                l="$(sed -n "$ln"p $dst)"
+                if [[ $l == "<meta"* ]]; then
+                    ln=$(($ln + 1))
+                    continue
+                else
+                    break
+                fi
+            done
+            echo "[$l]($dst)" >> "$src"
+        done
+    }
+    update_tags () {
+        rg "<meta tag=\"(.*)\">" -I -o -r '$1' $NOTESDIR | cut -d':' -f2 | sed 's/ /\n/g' | sort | uniq > $NOTESDIR/.tags
+    }
+    tag_note () {
+        files=$1
+        tag_name="$2"
+        # This is dumb tagging.
+        for fp in $files; do
+            echo -e "<meta tag=\"$tag_name\">\n$(cat "$fp")" > "$fp"
+        done
+        update_tags
+    }
+    add-note-context () {
+        while IFS='$\n' read -r in; do
+            echo "$in | $(grep -v '<meta.*>' $in | head -c 140 | tr '\n' ' ' | tr -d '|') | $(head -40 $in | tr '\n' ' ' | tr -d '|')"
+        done
+    }
+    strip-note-context () {
+        cut -d'|' -f1 | tr -d ' '
+    }
     # No point in searching the filenames since they contain no useful data.
     # Instead, filter down using ripgrep on change.
     CWD=$(pwd)
@@ -236,61 +397,67 @@ with open('$NOTESDIR/.starred_notes', 'w') as fp:
         out=$(CWD=$CWD REVERSE=true DISPLAY_DIR="Notes"
               RECENTS="$([ -f $NOTESDIR/.starred_notes ] &&
                            printf "\033[1;33m" &&
-                           cat $NOTESDIR/.starred_notes ;
-                           [ -f $NOTESDIR/.notes_history ] &&
+                           (cat $NOTESDIR/.starred_notes);
+                           #[ -f $NOTESDIR/.notes_history ] &&
                            printf "\033[1;34m" &&
-                           cat $NOTESDIR/.notes_history &&
+                           (ls -ut1 | head -20) &&
+                           #cat $NOTESDIR/.notes_history &&
                            printf "\033[0m")"
               search)
         ret_code=$?
         if [[ $ret_code -ne 0 ]]; then
-            cd $CWD
+            cd "$CWD"
             return $ret_code
         fi
         key=$(head -1 <<< $out)
-        files=$(tail -n +2 <<< $out)
-        if [[ -n "$files" ]]; then
-            if [ "$key" = "ctrl-t" ]; then
-                # TODO: can we do string processing so the thing listed in fzf
-                # is different than the thing we open? so first few lines are displayed, e.g.
-                # using a clever algorithm
-                # ^^ then I can finally use this for other stuff, if we have
-                # loosely coupled metadata.
+        files=$((tail -n +2 <<< $out))
+            # TODO: can we do string processing so the thing listed in fzf
+            # is different than the thing we open? so first few lines are displayed, e.g.
+            # using a clever algorithm
+            # ^^ then I can finally use this for other stuff, if we have
+            # loosely coupled metadata.
 
-                # add (proper) tagging support. For notes, just keep it in file.
-                # Notes need no metadata! The only information at all relevant
-                # is their filepath (folder and filename) and contents.
-                # The cached first lines thing is just for nice display and can
-                # be regenerated using the filepath and contents.
+            # add (proper) tagging support. For notes, just keep it in file.
+            # Notes need no metadata! The only information at all relevant
+            # is their filepath (folder and filename) and contents.
+            # The cached first lines thing is just for nice display and can
+            # be regenerated using the filepath and contents.
+        if [[ -n "$files" ]]; then
+            if [ "$key" = "ctrl-o" ]; then      # open
                 open $files
                 add_recent $files
-            elif [ "$key" = "ctrl-r" ]; then
-                TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
+            elif [ "$key" = "ctrl-r" ]; then    # new
+                TS=$(date -u +"%y.%m.%d-%H.%M")
                 ${EDITOR:-vim} "$NOTESDIR/$TS.md"
                 [ -f "$NOTESDIR/$TS.md" ] && add_recent "$TS.md"
-            elif [ "$key" = "ctrl-o" ]; then
+            elif [ "$key" = "ctrl-v" ]; then    # edit/view
                 ${EDITOR:-vim} $files
                 add_recent $files
-            elif [ "$key" = "ctrl-s" ]; then
+            elif [ "$key" = "ctrl-s" ]; then    # star
                 for fp in $files; do
                     star_note $fp
                 done
-            else
+            elif [ "$key" = "ctrl-x" ]; then    # link
+                for src in $files; do
+                    dst=$(prompt_link)
+                    link_note $src $dst
+                done
+            elif [ "$key" = "ctrl-t" ]; then    # tag
+                for fp in $files; do
+                    #tput smcup
+                    printf "Tag to add: "
+                    read tag_name
+                    #tput rmcup
+                    tag_note $fp "$tag_name"
+                done
+            else                                # print
                 echo $files
             fi
         fi
     elif [[ $1 = "new" ]]; then
-        if [[ ! -z $2 ]]; then
-            if [[ ! -d $2 ]]; then
-                mkdir -p "$NOTESDIR/$2"
-            fi
-            new_note_path="$NOTESDIR/$2"
-        else
-            new_note_path="$NOTESDIR"
-        fi
-        TS=$(date -u +"%Y-%m-%dT%H%M%SZ")
-        ${EDITOR:-vim} "$new_note_path/$TS.md"
-        [ -f "$2/$TS.md" ] && add_recent "$2/$TS.md"
+        TS=$(date -u +"%y.%m.%d-%H.%M")
+        ${EDITOR:-vim} "$NOTESDIR/$TS.md"
+        [ -f "$TS.md" ] && add_recent "$TS.md"
     elif [[ $1 = "app" ]]; then
         note open && note app
     elif [[ $1 = "home" ]]; then
@@ -304,10 +471,12 @@ with open('$NOTESDIR/.starred_notes', 'w') as fp:
             echo '---'
             echo
         done) | pandoc -f gfm -s | nchttp 3000
+    elif [[ $1 = "update-tags" ]]; then
+        update_tags
     else
         print_usage
     fi
-    cd $CWD
+    cd "$CWD"
 }
 
 scratch() {
@@ -323,7 +492,7 @@ scratch() {
                 CWD=$(pwd)
                 cd $SCRATCHDIR
                 ${EDITOR:-vim}
-                cd $CWD
+                cd "$CWD"
             else
                 ${EDITOR:-vim} $files
             fi
@@ -332,8 +501,12 @@ scratch() {
         CWD=$(pwd)
         cd $SCRATCHDIR
         ${EDITOR:-vim} $1
-        cd $CWD
+        cd "$CWD"
     fi
+}
+
+text() {
+    cat - | (echo "[hai :3]" ; sed -u -e "s/\(.*\)/[gigi] \1$(echo -e '\07')/"; echo "[gigi has left the chatroom]") | nc 192.168.0.127 17001
 }
 
 # fzf options

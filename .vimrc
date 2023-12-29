@@ -11,8 +11,15 @@ set showcmd
 set number
 "relative number
 "set rnu
-set cursorline
-set colorcolumn=81
+"set cursorline
+"set colorcolumn=81
+set nocursorline
+set colorcolumn=0
+set ruler
+
+"My favs: peachpuff, wildcharm, retrobox, habamax, lunaperche.
+set background=dark
+colorscheme retrobox
 
 " Prepend ~/.backup to backupdir so that Vim will look for that directory
 " before littering the current dir with backups.
@@ -49,10 +56,11 @@ set expandtab
 
 set backspace=2
 
-"Turn on filetype detection
-filetype plugin indent on
+let mapleader = " "
 
-let mapleader = "<space>"
+"Turn on filetype detection + syntax
+filetype plugin indent on
+syntax on
 
 "Display spaces and other whitespace characters
 let g:is_lcs_on = 0
@@ -103,91 +111,20 @@ au BufRead,BufNewFile *.tsx set filetype=javascript
 autocmd BufRead,BufNewFile,BufReadPost *.scala set ft=scala
 
 "Save view settings (e.g. cursor position, folds,...)
-autocmd BufWinLeave *.* mkview
-autocmd BufWinEnter *.* silent loadview
+"autocmd BufWinLeave *.* mkview
+"autocmd BufWinEnter *.* silent loadview
 
 "Conceal settings
 au BufWinEnter * set conceallevel=2
 au BufWinEnter * set concealcursor=
 au FileType markdown set foldmethod=marker
 
-"au vimenter * hi! EndOfBuffer ctermbg=none guibg=NONE
-"au BufWinEnter * hi! SpecialKey ctermfg=239 guifg=#4e4e4e
-"au vimenter * hi! Terminal ctermbg=none guibg=NONE
-"au vimenter * hi! Normal ctermbg=none guibg=NONE
 highlight Comment cterm=italic
-"highlight Todo ctermbg=109 guibg=#83a598
-"highlight htmlItalic cterm=italic ctermbg=none guibg=NONE
-"highlight htmlBold cterm=bold ctermbg=none guibg=NONE
-"highlight htmlBoldItalic ctermbg=none guibg=NONE
-"highlight htmlLink ctermfg=cyan guifg=cyan
-"au FileType markdown set termguicolors
-
-"function! LoadColors(...)
-"    set termguicolors
-"    if !exists('g:loaded_color')
-"        let g:loaded_color = 1
-"
-"        let iterm_profile = $ITERM_PROFILE
-"        if iterm_profile == "dark"
-"            set background=dark
-"        elseif iterm_profile == "light"
-"            set background=light
-"        else
-"            set background=dark
-"        endif
-"
-"        colorscheme gruvbox
-"        let g:gruvbox_termcolors=16
-"        let g:gruvbox_transparent_bg=1
-"        let g:airline_theme='gruvbox'
-"    endif
-"    if !exists('g:syntax_on')
-"        syntax enable
-"    endif
-"endfunction
-"
-"au BufEnter * call LoadColors()
-
-"Custom commands
-"Build a .tex file to pdf
-"command Pdf !clear; pdflatex.exe -quiet %
-
-""vim-slime settings
-"let g:slime_target = "tmux"
-"let g:slime_default_config = {"socket_name": "default", "target_pane": "{last}"}
-"let g:slime_haskell_ghci_add_let = 0
-"let g:slime_python_ipython = 1
-"let g:slime_no_mappings = 1
-"xnoremap <leader>r <Plug>SlimeRegionSend
-"nnoremap <leader>r <Plug>SlimeParagraphSend
-""No mapping for this, but can always redo config with `:SlimeConfig`!
-
-"inoremap <silent><expr> <c-@> coc#refresh()
-
-"nnoremap <silent> K :call ShowDocumentation()<CR>
-
-"function! ShowDocumentation()
-"  if CocAction('hasProvider', 'hover')
-"    call CocActionAsync('doHover')
-"  else
-"    call feedkeys('K', 'in')
-"  endif
-"endfunction
+hi Normal ctermbg=none
 
 "Custom keybindings
 
 "Arrow & special movements go by display line, not actual line
-"noremap  <Up>   gk
-"noremap  <Down> gj
-"noremap  <Home> g<Home>
-"noremap  <End>  g<End>
-"inoremap <Up>   <C-o>gk
-"inoremap <Down> <C-o>gj
-"inoremap <Home> <C-o>g<Home>
-"inoremap <End>  <C-o>g<End>
-
-"More of the same movement by display line, but actually redefining j and k
 nnoremap <C-j> j
 nnoremap <C-k> k
 nnoremap j gj
@@ -198,17 +135,19 @@ nnoremap <C-l> :nohlsearch<CR><C-l>
 
 "Insert date
 "TODO: add more options
-inoremap <leader>d <C-r>=strftime('%Y-%m-%d')<CR>
+nnoremap <leader>d a<C-r>=strftime('%Y-%m-%d')<CR><Esc>
 "Insert time
-inoremap <leader>t <C-r>=strftime('%H:%M %Z')<CR>
+nnoremap <leader>t a<C-r>=strftime('%H:%M %Z')<CR><Esc>
 "Insert datetime
-inoremap <leader>f <C-r>=strftime('%Y-%m-%d %H:%M:%S%z')<CR>
+nnoremap <leader>f a<C-r>=strftime('%Y-%m-%d %H:%M:%S%z')<CR><Esc>
 
 "Open netrw with \e
 nnoremap <leader>e :Lexplore<CR>
 
 let g:netrw_banner = 0
 let g:netrw_preview = 1  "Use vertical split
+let g:netrw_alto = 0
+let g:netrw_altv = 0
 "let g:netrw_liststyle = 3 "Tree style
 let g:netrw_winsize = 30 "Only take 30% of window
 let g:netrw_browse_split = 0 "Open in current window (default)
@@ -285,8 +224,8 @@ nnoremap <leader>m :silent execute "make"<CR><C-l>
 "Copy current line with \c
 nnoremap <leader>c "+yy
 
-au FileType markdown inoremap <leader>- * [ ] 
-au FileType markdown inoremap <leader>m <meta tag=""><C-o>h<C-x><C-k><C-p>
+au FileType markdown nnoremap <leader>- a* [ ] <Esc>
+au FileType markdown nnoremap <leader>m a<meta tag=""><C-o>h<C-x><C-k><C-p><Esc>
 
 function! MdNextHeading(dir)
     "Want to jump to next heading at same depth (can go backwards by passing
@@ -335,8 +274,8 @@ function! MdNextHeading(dir)
     endif
 endfunction
 
-au FileType markdown nnoremap <C-n> :call MdNextHeading('')<CR>
-au FileType markdown nnoremap <C-p> :call MdNextHeading('b')<CR>
+au FileType markdown nnoremap gj :call MdNextHeading('')<CR>
+au FileType markdown nnoremap gk :call MdNextHeading('b')<CR>
 
 function! MdGoToDeeperHeading(dir)
     "Jump to higher or lower heading level (less or more deep). If there is no such heading, do
@@ -411,8 +350,8 @@ function! MdGoToDeeperHeading(dir)
     endif
 endfunction
 
-au FileType markdown nnoremap <C-i> :call MdGoToDeeperHeading('')<CR>
-au FileType markdown nnoremap <C-o> :call MdGoToDeeperHeading('b')<CR>
+au FileType markdown nnoremap gl :call MdGoToDeeperHeading('')<CR>
+au FileType markdown nnoremap gh :call MdGoToDeeperHeading('b')<CR>
 
 "Automatic closings
 inoremap {<CR> {<CR>}<ESC>O

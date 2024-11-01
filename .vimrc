@@ -22,7 +22,7 @@ set ruler
 
 "My favs: peachpuff, wildcharm, retrobox, habamax, lunaperche.
 set background=dark
-colorscheme retrobox
+colorscheme gruvbox-material
 
 " Prepend ~/.backup to backupdir so that Vim will look for that directory
 " before littering the current dir with backups.
@@ -144,7 +144,7 @@ nnoremap <leader>d a<C-r>=strftime('%Y-%m-%d')<CR><Esc>
 "Insert time
 nnoremap <leader>t a<C-r>=strftime('%H:%M %Z')<CR><Esc>
 "Insert datetime
-nnoremap <leader>f a<C-r>=strftime('%Y-%m-%d %H:%M:%S%z')<CR><Esc>
+nnoremap <leader>f a<C-r>=strftime('%Y-%m-%d %H:%M:%S %Z')<CR><Esc>
 
 "Open netrw with \e
 nnoremap <leader>e :Lexplore<CR>
@@ -329,3 +329,9 @@ set pastetoggle=<F3>
 "Open split panes to right and bottom
 set splitright
 "set splitbelow
+
+"Vim Markdown
+let g:vim_markdown_folding_disabled = 1
+let g:vim_markdown_follow_anchor = 1
+let g:vim_markdown_auto_insert_bullets = 0
+let g:vim_markdown_new_list_item_indent = 0

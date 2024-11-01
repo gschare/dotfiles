@@ -1,6 +1,9 @@
 scriptencoding utf-8
 set encoding=utf-8
 
+"set t_ZH=[3m
+"set t_ZR=[23m
+
 "No compatibility mode
 set nocompatible
 
@@ -115,12 +118,14 @@ autocmd BufRead,BufNewFile,BufReadPost *.scala set ft=scala
 "autocmd BufWinEnter *.* silent loadview
 
 "Conceal settings
-au BufWinEnter * set conceallevel=2
+au BufWinEnter * set conceallevel=0 "2
 au BufWinEnter * set concealcursor=
 au FileType markdown set foldmethod=marker
 
 highlight Comment cterm=italic
-hi Normal ctermbg=none
+hi Normal guibg=NONE ctermbg=NONE
+
+set termguicolors
 
 "Custom keybindings
 
@@ -185,47 +190,10 @@ nnoremap ]B :blast<CR>
 nnoremap <C-j> :bnext<CR>
 nnoremap <C-k> :bprevious<CR>
 
-"Davis config
-"Command to save with timestamp in notes dir
-function! NewNote(...)
-    e `=system('bash ~/bin/new_note_name')`
-    if a:0 == 0
-        execute "normal i <meta tag=\"note\">"
-    else
-        execute "normal i <meta tag=\"" . join(a:000) . "\">"
-    endif
-endfunction
-
-command! -nargs=* Note call NewNote(<f-args>)
-
-function! NewNoteAndInsertLink(...)
-    r !bash ~/bin/new_note_name
-    if a:0 == 0
-        call NewNote()
-    else
-        call NewNote(join(a:000))
-    endif
-endfunction
-
-command! -nargs=* NoteAndLink call NewNoteAndInsertLink(<f-args>)
-
-"Command to search for files with a certain tag
-"Currently only allows one argument
-function! FTagSearch(t)
-    call s:Rg("<meta tag=\".*" . a:t . ".*\">", "~/notes/")
-endfunction
-
-command! -nargs=1 Tag call FTagSearch(<f-args>)
-
-"Run Makefile with \m
-"inoremap <Leader>m <C-o>:make<CR>
-nnoremap <leader>m :silent execute "make"<CR><C-l>
-
-"Copy current line with \c
+"Copy current line
 nnoremap <leader>c "+yy
 
 au FileType markdown nnoremap <leader>- a* [ ] <Esc>
-au FileType markdown nnoremap <leader>m a<meta tag=""><C-o>h<C-x><C-k><C-p><Esc>
 
 function! MdNextHeading(dir)
     "Want to jump to next heading at same depth (can go backwards by passing

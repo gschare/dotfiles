@@ -27,7 +27,7 @@ include /etc/sway/config-vars.d/*
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 #output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-output * bg /home/schare/Pictures/hk-hornet.jpg fill
+output * bg /home/schare/Pictures/Wallpapers/hk-hornet.jpg fill
 #
 # Example configuration:
 #
@@ -35,7 +35,17 @@ output * bg /home/schare/Pictures/hk-hornet.jpg fill
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
-output eDP-1 resolution 2256x1504 position 0,0 scale 1
+## Home
+# monitor to left, laptop to right
+#output DP-4 pos 0 0
+#output eDP-1 resolution 2256x1504 position 1920,0 scale 1
+#workspace 2 output DP-4 # workspace 2 is always on second monitor
+
+## Ofice
+# monitor above, laptop below
+output DP-2 pos 0 0
+output eDP-1 resolution 2256x1504 position 0,1440 scale 1
+workspace 2 output DP-2 # workspace 2 is always on second monitor
 
 ### Idle configuration
 #
@@ -275,9 +285,11 @@ seat * hide_cursor 3000
 #gaps outer 0
 
 #client.<class>         <border>  <background>  <text>    <indicator>   <child_border>
-client.focused          "#8f3f71" "#401d33"     "#ebdbb2" "#ebdbb2"     "#2c2c2c"
-client.focused_inactive "#23242a" "#1a1a1a"     "#666666" "#000000"     "#8f3f71"
-client.unfocused        "#282828" "#1a1a1a"     "#928374" "#000000"     "#8f3f71"
+client.focused          "#546e70" "#273233"     "#ebdbb2" "#ebdbb2"     "#2c2c2c"
+client.focused_inactive "#23242a" "#1a1a1a"     "#666666" "#000000"     "#546e70"
+#"#316c70"
+client.unfocused        "#282828" "#1a1a1a"     "#928374" "#000000"     "#546e70"
+#"#316c70"
 #client.focused          "#8f3f71" "#401d33"     "#ebdbb2" "#ebdbb2"     "#2c2c2c"
 #client.focused_inactive "#23242a" "#1a1a1a"     "#666666" "#000000"     "#8f3f71"
 #client.unfocused        "#282828" "#1a1a1a"     "#928374" "#000000"     "#8f3f71"
@@ -300,5 +312,7 @@ include /etc/sway/config.d/*
 # Setup for xdg-desktop-portal-wlr
 # using GNOME instead of sway in order to trick Zoom
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+
+exec_always gammastep -l 43.3736:-71.1097 -t 6500:3500
 
 include ~/.config/sway/config.d/*
